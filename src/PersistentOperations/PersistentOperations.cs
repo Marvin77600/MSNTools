@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-
+using UnityEngine;
 
 namespace MSNTools
 {
     class PersistentOperations
     {
-
         public static List<ClientInfo> ClientList()
         {
             List<ClientInfo> _clientList = ConnectionManager.Instance.Clients.List.ToList();
@@ -17,9 +17,35 @@ namespace MSNTools
             return null;
         }
 
-        public static ClientInfo GetClientInfoFromSteamId(string _playerId)
+        public static void ReturnBlock(ClientInfo _cInfo, string _blockName, int _quantity)
         {
-            ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_playerId);
+            EntityPlayer player = GetEntityPlayer(_cInfo.entityId);
+            if (player != null && player.IsSpawned() && !player.IsDead())
+            {
+                World world = GameManager.Instance.World;
+                ItemValue itemValue = ItemClass.GetItem(_blockName, false);
+                if (itemValue != null)
+                {
+                    var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                    {
+                        entityClass = EntityClass.FromString("item"),
+                        id = EntityFactory.nextEntityID++,
+                        itemStack = new ItemStack(itemValue, _quantity),
+                        pos = world.Players.dict[_cInfo.entityId].position,
+                        rot = new Vector3(20f, 0f, 20f),
+                        lifetime = 60f,
+                        belongsPlayerId = _cInfo.entityId
+                    });
+                    world.SpawnEntityInWorld(entityItem);
+                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                }
+            }
+        }
+
+        public static ClientInfo GetClientInfoFromPlatformUser(PlatformUserIdentifierAbs _platformUser)
+        {
+            ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForUserId(_platformUser);
             if (_cInfo != null)
             {
                 return _cInfo;
@@ -46,26 +72,18 @@ namespace MSNTools
             return null;
         }
 
-        public static EntityPlayer GetEntityPlayer(string _playerId)
+        public static EntityPlayer GetEntityPlayer(int _id)
         {
-            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
-            if (_persistentPlayerData != null)
+            if (GameManager.Instance.World.Players.dict.ContainsKey(_id))
             {
-                if (GameManager.Instance.World.Players.dict.ContainsKey(_persistentPlayerData.EntityId))
-                {
-                    EntityPlayer _entityPlayer = GameManager.Instance.World.Players.dict[_persistentPlayerData.EntityId];
-                    if (_entityPlayer != null)
-                    {
-                        return _entityPlayer;
-                    }
-                }
+                return GameManager.Instance.World.Players.dict[_id];
             }
             return null;
         }
 
-        public static EntityAlive GetPlayerAlive(string _playerId)
+        public static EntityAlive GetPlayerAlive(PlatformUserIdentifierAbs _playerId)
         {
-            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
+            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromPlatformUser(_playerId);
             if (_persistentPlayerData != null)
             {
                 if (GameManager.Instance.World.Players.dict.ContainsKey(_persistentPlayerData.EntityId))
@@ -92,7 +110,7 @@ namespace MSNTools
 
         public static PersistentPlayerList GetPersistentPlayerList()
         {
-            PersistentPlayerList _persistentPlayerList = GameManager.Instance.persistentPlayers;
+            PersistentPlayerList _persistentPlayerList = GameManager.Instance.persistentPlayers.NetworkCloneRelevantForPlayer();
             if (_persistentPlayerList != null)
             {
                 return _persistentPlayerList;
@@ -100,12 +118,12 @@ namespace MSNTools
             return null;
         }
 
-        public static PersistentPlayerData GetPersistentPlayerDataFromSteamId(string _playerId)
+        public static PersistentPlayerData GetPersistentPlayerDataFromPlatformUser(PlatformUserIdentifierAbs _platformUser)
         {
             PersistentPlayerList _persistentPlayerList = GameManager.Instance.persistentPlayers;
             if (_persistentPlayerList != null)
             {
-                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerData(_playerId);
+                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerData(_platformUser);
                 if (_persistentPlayerData != null)
                 {
                     return _persistentPlayerData;
@@ -131,7 +149,7 @@ namespace MSNTools
         public static PlayerDataFile GetPlayerDataFileFromSteamId(string _playerId)
         {
             PlayerDataFile _playerDatafile = new PlayerDataFile();
-            _playerDatafile.Load(GameUtils.GetPlayerDataDir(), _playerId.Trim());
+            _playerDatafile.Load(GameIO.GetPlayerDataDir(), _playerId.Trim());
             if (_playerDatafile != null)
             {
                 return _playerDatafile;
@@ -145,13 +163,48 @@ namespace MSNTools
             if (_persistentPlayerData != null)
             {
                 PlayerDataFile _playerDatafile = new PlayerDataFile();
-                _playerDatafile.Load(GameUtils.GetPlayerDataDir(), _persistentPlayerData.PlayerId.Trim());
+                _playerDatafile.Load(GameIO.GetPlayerDataDir(), _persistentPlayerData.PlayerName);
                 if (_playerDatafile != null)
                 {
                     return _playerDatafile;
                 }
             }
             return null;
+        }
+
+        public static bool ClaimedByAllyOrSelf(PlatformUserIdentifierAbs _uId, Vector3i _position)
+        {
+            PersistentPlayerList persistentPlayerList = GetPersistentPlayerList();
+            if (persistentPlayerList != null)
+            {
+                PersistentPlayerData persistentPlayerData = persistentPlayerList.GetPlayerData(_uId);
+                if (persistentPlayerData != null)
+                {
+                    EnumLandClaimOwner owner = GameManager.Instance.World.GetLandClaimOwner(_position, persistentPlayerData);
+                    if (owner == EnumLandClaimOwner.Ally || owner == EnumLandClaimOwner.Self)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static bool IsBloodmoon()
+        {
+            try
+            {
+                World world = GameManager.Instance.World;
+                if (GameUtils.IsBloodMoonTime(world.GetWorldTime(), (world.DuskHour, world.DawnHour), GameStats.GetInt(EnumGameStats.BloodMoonDay)))
+                {
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out($"{Config.ModPrefix} Error in PersistentOperations.IsBloodmoon: {e.Message}");
+            }
+            return false;
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using UnityEngine;
 
 namespace MSNTools.Discord
 {
@@ -67,7 +67,7 @@ namespace MSNTools.Discord
         /// <summary>
         /// Embed color
         /// </summary>
-        public Color? Color;
+        public Color32? Color;
 
         /// <summary>
         /// Embed footer

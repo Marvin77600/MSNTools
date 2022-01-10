@@ -1,11 +1,12 @@
 ﻿using System;
-using SystemColor = System.Drawing.Color;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Collections.Generic;
+using MSNTools.ChatCommands;
 using MSNTools.Discord;
+using UnityEngine;
 
 namespace MSNTools
 {
@@ -13,11 +14,12 @@ namespace MSNTools
     {
         public static string ModName = "MSNTools";
         public const string ModVersion = "1.0.0";
-        public const string GameVersion = "19.6.8";
+        public static string GameVersion = $"{Constants.cVersionMajor}.{Constants.cVersionMinor} (b{Constants.cVersionBuild})";
         public static string ModPrefix = $"[{ModName.ToUpper()}]", Server_Response_Name = $"{ModName}", Chat_Response_Color = "[00FF00]";
         public static string ConfigPath = $"{GamePrefs.GetString(EnumGamePrefs.SaveGameFolder)}/{ModName}";
         private static string ConfigFile = $"{ModName}Config.xml";
         public static string ConfigFilePath = $"{ConfigPath}/{ConfigFile}";
+        
 
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher();
 
@@ -39,14 +41,20 @@ namespace MSNTools
             },
             { "Tools", new Dictionary<string, List <string>>
                 {
+                    {"Alerts_Webhook", new List<string> { "Enable", "Webhook_Url", "Color" } },
+                    {"Anti_Collapse", new List<string> { "Enable", "Min_Entities_Detected"} },
+                    {"Bank", new List<string> { "Enable", "Gain_Every_Hours", "Donator_Gain_Every_Hours", "Devise_Name"} },
+                    {"Chat_Commands", new List<string> { "Enable", "Prefix"} },
                     {"Chat_Webhook", new List<string> { "Enable", "Webhook_Url" } },
                     {"Godmode_Detector", new List<string> { "Enable", "Admin_Level" } },
                     {"High_Ping_Kicker", new List<string> { "Enable", "Max_Ping", "Flags" } },
-                    {"Inventory_Check", new List<string> { "Enable", "Admin_Level", "Check_Storage" } },
+                    {"Inventory_Check", new List<string> { "Enable", "Admin_Level", "Check_Storage", "Exceptions_Items" } },
                     {"Player_Infos_Webhook", new List<string> { "Enable", "Webhook_Url", "Connected_Color", "Disconnected_Color" } },
                     {"Sanctions_Webhook", new List<string> { "Enable", "Webhook_Url", "Color" } },
                     {"Server_Infos_Webhook", new List<string> { "Enable", "Webhook_Url", "Connected_Color", "Disconnected_Color" } },
-                    {"Spectator_Detector", new List<string> { "Enable", "Admin_Level" } }
+                    {"Spectator_Detector", new List<string> { "Enable", "Admin_Level" } },
+                    {"TP_Command", new List<string> { "Enable", "TP_Cost", "TP_Max_Count" } },
+                    {"Vote_Command", new List<string>{ "Enable", "Gain_Per_Vote", "API_Server_Token" } }
                 }
             }
         };
@@ -68,7 +76,7 @@ namespace MSNTools
             Log.Out("---------------------------------------------------------------");
             Log.Out($"{ModPrefix} Verifying configuration file & Saving new entries");
             Log.Out("---------------------------------------------------------------");
-            if (!Utils.FileExists(ConfigFilePath))
+            if (!File.Exists(ConfigFilePath))
             {
                 WriteXml();
             }
@@ -175,6 +183,57 @@ namespace MSNTools
                                 {
                                     switch (nameAttribute)
                                     {
+                                        case "Alerts_Webhook":
+                                            if (paramName == "Enable")
+                                            {
+                                                if (!TryParseBool(attribute, out DiscordWebhookSender.AlertsEnabled, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "Webhook_Url")
+                                            {
+                                                if (!TryParseUrl(attribute, out DiscordWebhookSender.AlertsWekHookUrl, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "Color")
+                                            {
+                                                if (!TryParseColor(attribute, out DiscordWebhookSender.AlertsColor, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            break;
+                                        case "Anti_Collapse":
+                                            if (paramName == "Enable")
+                                            {
+                                                if (!TryParseBool(attribute, out AntiCollapse.IsEnabled, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "Min_Entities_Detected")
+                                            {
+                                                if (!TryParseInt(attribute, out AntiCollapse.MinEntitiesDetected, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            break;
+                                        case "Bank":
+                                            if (paramName == "Enable")
+                                            {
+                                                if (!TryParseBool(attribute, out Bank.IsEnabled, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "Devise_Name")
+                                            {
+                                                if (!TryParseString(attribute, out Bank.DeviseName, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "Donator_Gain_Every_Hours")
+                                            {
+                                                if (!TryParseInt(attribute, out Bank.DonatorGainEveryHours, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "Gain_Every_Hours")
+                                            {
+                                                if (!TryParseInt(attribute, out Bank.GainEveryHours, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            break;
                                         case "Chat_Webhook":
                                             if (paramName == "Enable")
                                             {
@@ -183,9 +242,20 @@ namespace MSNTools
                                             }
                                             else if (paramName == "Webhook_Url")
                                             {
-                                                if (DiscordWebhookSender.ChatEnabled)
-                                                    if (!TryParseUrl(attribute, out DiscordWebhookSender.ChatWebHookUrl, nameAttribute, paramName, subChild))
-                                                        continue;
+                                                if (!TryParseUrl(attribute, out DiscordWebhookSender.ChatWebHookUrl, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            break;
+                                        case "Chat_Commands":
+                                            if (paramName == "Enable")
+                                            {
+                                                if (!TryParseBool(attribute, out ChatCommandsHook.ChatCommandsEnabled, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "Prefix")
+                                            {
+                                                if (!TryParseString(attribute, out ChatCommandsHook.ChatCommandsPrefix, nameAttribute, paramName, subChild))
+                                                    continue;
                                             }
                                             break;
                                         case "Godmode_Detector":
@@ -233,6 +303,11 @@ namespace MSNTools
                                                 if (!TryParseBool(attribute, out InventoryChecks.Check_Storage, nameAttribute, paramName, subChild))
                                                     continue;
                                             }
+                                            else if (paramName == "Exceptions_Items")
+                                            {
+                                                if (!TryParseList(attribute, out InventoryChecks.Exceptions_Items, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
                                             break;
                                         case "Player_Infos_Webhook":
                                             if (paramName == "Enable")
@@ -264,9 +339,8 @@ namespace MSNTools
                                             }
                                             else if (paramName == "Webhook_Url")
                                             {
-                                                if (DiscordWebhookSender.SanctionsEnabled)
-                                                    if (!TryParseUrl(attribute, out DiscordWebhookSender.SanctionsWebHookUrl, nameAttribute, paramName, subChild))
-                                                        continue;
+                                                if (!TryParseUrl(attribute, out DiscordWebhookSender.SanctionsWebHookUrl, nameAttribute, paramName, subChild))
+                                                    continue;
                                             }
                                             else if (paramName == "Color")
                                             {
@@ -308,6 +382,40 @@ namespace MSNTools
                                                     continue;
                                             }
                                             break;
+                                        case "TP_Command":
+                                            if (paramName == "Enable")
+                                            {
+                                                if (!TryParseBool(attribute, out ChatCommandTP.IsEnabled, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "TP_Cost")
+                                            {
+                                                if (!TryParseInt(attribute, out ChatCommandTP.TPCost, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "TP_Max_Count")
+                                            {
+                                                if (!TryParseInt(attribute, out ChatCommandTP.TPMaxCount, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            break;
+                                        case "Vote_Command":
+                                            if (paramName == "Enable")
+                                            {
+                                                if (!TryParseBool(attribute, out ChatCommandVote.IsEnabled, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "Gain_Per_Vote")
+                                            {
+                                                if (!TryParseInt(attribute, out ChatCommandVote.GainPerVote, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "API_Server_Token")
+                                            {
+                                                if (!TryParseString(attribute, out ChatCommandVote.APIServerToken, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            break;
                                     }
                                 }
                             }
@@ -336,14 +444,20 @@ namespace MSNTools
                 sw.WriteLine($"        <BaseConf Name=\"Discord_Footer_Image_Url\" Value=\"{DiscordWebhookSender.FooterImageUrl}\" />");
                 sw.WriteLine("    </BaseConfs>");
                 sw.WriteLine("    <Tools>");
-                sw.WriteLine($"        <Tool Name=\"Chat_Webhook\" Enable=\"{DiscordWebhookSender.ChatEnabled}\" Webhook_Url=\"{DiscordWebhookSender.ChatWebHookUrl}\" />");
+                sw.WriteLine($"        <Tool Name=\"Alerts_Webhook\" Enable=\"{DiscordWebhookSender.AlertsEnabled}\" Webhook_Url=\"{DiscordWebhookSender.AlertsWekHookUrl}\" Color=\"{DiscordWebhookSender.AlertsColor.r},{DiscordWebhookSender.AlertsColor.g},{DiscordWebhookSender.AlertsColor.b}\" />");
+                sw.WriteLine($"        <Tool Name=\"Anti_Collapse\" Enable=\"{AntiCollapse.IsEnabled}\" Min_Entities_Detected=\"{AntiCollapse.MinEntitiesDetected}\" />");
+                sw.WriteLine($"        <Tool Name=\"Bank\" Enable=\"{Bank.IsEnabled}\" Donator_Gain_Every_Hours=\"{Bank.DonatorGainEveryHours}\" Gain_Every_Hours=\"{Bank.GainEveryHours}\" Devise_Name=\"{Bank.DeviseName}\" />");
+                sw.WriteLine($"        <Tool Name=\"Chat_Commands\" Enable=\"{ChatCommandsHook.ChatCommandsEnabled}\" Prefix=\"{ChatCommandsHook.ChatCommandsPrefix}\" />");
+                sw.WriteLine($"        <Tool Name=\"Chat_Webhook\" Enable=\"{DiscordWebhookSender.ChatEnabled}\" Prefix=\"{ChatCommandsHook.ChatCommandsPrefix}\"  Webhook_Url=\"{DiscordWebhookSender.ChatWebHookUrl}\" />");
                 sw.WriteLine($"        <Tool Name=\"Godmode_Detector\" Enable=\"{PlayerChecks.GodEnabled}\" Admin_Level=\"{PlayerChecks.God_Admin_Level}\" />");
                 //sw.WriteLine($"        <Tool Name=\"High_Ping_Kicker\" Enable=\"{0}\" Max_Ping=\"{1}\" Flags=\"{2}\" />");
-                sw.WriteLine($"        <Tool Name=\"Player_Infos_Webhook\" Enable=\"{DiscordWebhookSender.PlayerInfosEnabled}\" Webhook_Url=\"{DiscordWebhookSender.PlayerInfosWebHookUrl}\" Connected_Color=\"{DiscordWebhookSender.PlayerConnectedColor}\" Disconnected_Color=\"{DiscordWebhookSender.PlayerDisconnectedColor}\" />");
-                sw.WriteLine($"        <Tool Name=\"Server_Infos_Webhook\" Enable=\"{DiscordWebhookSender.ServerInfosEnabled}\" Webhook_Url=\"{DiscordWebhookSender.ServerInfosWebHookUrl}\" Connected_Color=\"{DiscordWebhookSender.ServerOnlineColor}\" Disconnected_Color=\"{DiscordWebhookSender.ServerOfflineColor}\" />");
-                sw.WriteLine($"        <Tool Name=\"Inventory_Check\" Enable=\"{InventoryChecks.IsEnabled}\" Admin_Level=\"{InventoryChecks.Admin_Level}\" Check_Storage=\"{InventoryChecks.Check_Storage}\" />");
-                sw.WriteLine($"        <Tool Name=\"Sanctions_Webhook\" Enable=\"{DiscordWebhookSender.SanctionsEnabled}\" Webhook_Url=\"{DiscordWebhookSender.SanctionsWebHookUrl}\" Color=\"{DiscordWebhookSender.SanctionsColor}\"/>");
+                sw.WriteLine($"        <Tool Name=\"Inventory_Check\" Enable=\"{InventoryChecks.IsEnabled}\" Admin_Level=\"{InventoryChecks.Admin_Level}\" Check_Storage=\"{InventoryChecks.Check_Storage}\" Exceptions_Items=\"{InventoryChecks.Exceptions_Items}\" />");
+                sw.WriteLine($"        <Tool Name=\"Player_Infos_Webhook\" Enable=\"{DiscordWebhookSender.PlayerInfosEnabled}\" Webhook_Url=\"{DiscordWebhookSender.PlayerInfosWebHookUrl}\" Connected_Color=\"{DiscordWebhookSender.PlayerConnectedColor.r},{DiscordWebhookSender.PlayerConnectedColor.g},{DiscordWebhookSender.PlayerConnectedColor.b}\" Disconnected_Color=\"{DiscordWebhookSender.PlayerDisconnectedColor.r},{DiscordWebhookSender.PlayerDisconnectedColor.g},{DiscordWebhookSender.PlayerDisconnectedColor.b}\" />");
+                sw.WriteLine($"        <Tool Name=\"Server_Infos_Webhook\" Enable=\"{DiscordWebhookSender.ServerInfosEnabled}\" Webhook_Url=\"{DiscordWebhookSender.ServerInfosWebHookUrl}\" Connected_Color=\"{DiscordWebhookSender.ServerOnlineColor.r},{DiscordWebhookSender.ServerOnlineColor.g},{DiscordWebhookSender.ServerOnlineColor.b}\" Disconnected_Color=\"{DiscordWebhookSender.ServerOfflineColor.r},{DiscordWebhookSender.ServerOfflineColor.g},{DiscordWebhookSender.ServerOfflineColor.b}\" />");
+                sw.WriteLine($"        <Tool Name=\"Sanctions_Webhook\" Enable=\"{DiscordWebhookSender.SanctionsEnabled}\" Webhook_Url=\"{DiscordWebhookSender.SanctionsWebHookUrl}\" Color=\"{DiscordWebhookSender.SanctionsColor.r},{DiscordWebhookSender.SanctionsColor.g},{DiscordWebhookSender.SanctionsColor.b}\"/>");
                 sw.WriteLine($"        <Tool Name=\"Spectator_Detector\" Enable=\"{PlayerChecks.SpectatorEnabled}\" Admin_Level=\"{PlayerChecks.Spectator_Admin_Level}\" />");
+                sw.WriteLine($"        <Tool Name=\"TP_Command\" Enable=\"{ChatCommandTP.IsEnabled}\" TP_Cost=\"{ChatCommandTP.TPCost}\" TP_Max_Count=\"{ChatCommandTP.TPMaxCount}\" />");
+                sw.WriteLine($"        <Tool Name=\"Vote_Command\" Enable=\"{ChatCommandVote.IsEnabled}\" Gain_Per_Vote=\"{ChatCommandVote.GainPerVote}\" API_Server_Token=\"{ChatCommandVote.APIServerToken}\" />");
                 sw.WriteLine("    </Tools>");
                 sw.WriteLine($"</{ModName}>");
                 sw.Flush();
@@ -374,7 +488,7 @@ namespace MSNTools
             try
             {
                 FileWatcher.EnableRaisingEvents = false;
-                if (Utils.FileExists(ConfigFilePath))
+                if (File.Exists(ConfigFilePath))
                 {
                     XmlDocument _newXml = new XmlDocument();
                     try
@@ -445,6 +559,42 @@ namespace MSNTools
             return parse;
         }
 
+        static bool TryParseString(string value, out string result, string nameAttribute, string paramName, XmlNode node)
+        {
+            if (value.Length != 0)
+            {
+                result = value;
+                return true;
+            }
+            else
+            {
+                result = string.Empty;
+                Log.Warning($"{ModPrefix} Ignoring {nameAttribute} entry in {ConfigFile} because of invalid string value for '{paramName}' attribute: {node.OuterXml}");
+                return false;
+            }
+        }
+
+        static bool TryParseList(string value, out List<string> result, string nameAttribute, string paramName, XmlNode node)
+        {
+            if (value.Length != 0)
+            {
+                string[] array = value.Split(new string[] { ",", " ,", ", " }, StringSplitOptions.RemoveEmptyEntries);
+                List<string> list = new List<string>();
+                foreach (string item in array)
+                {
+                    list.Add(item);
+                }
+                result = list;
+                return true;
+            }
+            else
+            {
+                result = new List<string>();
+                Log.Warning($"{ModPrefix} Ignoring {nameAttribute} entry in {ConfigFile} because of invalid string value for '{paramName}' attribute: {node.OuterXml}");
+                return false;
+            }
+        }
+
         static bool TryParseUrl(string value, out string result, string nameAttribute, string paramName, XmlNode node)
         {
             if (value.StartsWith("http://") || value.StartsWith("https://"))
@@ -460,7 +610,7 @@ namespace MSNTools
             }
         }
 
-        static bool TryParseColor(string value, out SystemColor systemColor, string nameAttribute, string paramName, XmlNode node)
+        static bool TryParseColor(string value, out Color32 color, string nameAttribute, string paramName, XmlNode node)
         {
             try
             {
@@ -469,17 +619,17 @@ namespace MSNTools
                 if (m.Success)
                 {
                     string[] rgb = value.Split(',');
-                    int r = int.Parse(rgb[0]);
-                    int g = int.Parse(rgb[1]);
-                    int b = int.Parse(rgb[2]);
-                    SystemColor color = SystemColor.FromArgb(r, g, b);
-                    systemColor = color;
+                    byte r = byte.Parse(rgb[0]);
+                    byte g = byte.Parse(rgb[1]);
+                    byte b = byte.Parse(rgb[2]);
+                    Color32 _color = new Color32(r, g, b, 0);
+                    color = _color;
                     return true;
                 }
                 else
                 {
                     Log.Warning($"{ModPrefix} Ignoring {nameAttribute} entry in {ConfigFile} because of invalid color value for '{paramName}' attribute: {node.OuterXml}");
-                    systemColor = SystemColor.White;
+                    color = Color.white;
                     return false;
                 }
             }
@@ -487,7 +637,7 @@ namespace MSNTools
             {
                 Log.Out($"{ModPrefix} Error in Config.TryParseColor: {e.Message}");
             }
-            systemColor = SystemColor.White;
+            color = Color.white;
             return false;
         }
     }

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using MSNTools.PersistentData;
+using MSNTools.ChatCommands;
+using System.Collections.Generic;
 using System.Timers;
 
 namespace MSNTools
@@ -7,7 +9,7 @@ namespace MSNTools
     {
         public static bool IsRunning = false;
         private static int CoreCount, _twoSecondTick, _fiveSecondTick, _tenSecondTick, _twentySecondTick, _oneMinTick, _twoMinTick, _fiveMinTick = 0;
-        private static readonly System.Timers.Timer Core = new System.Timers.Timer();
+        private static readonly Timer Core = new Timer();
 
         public static void TimerStart()
         {
@@ -48,7 +50,10 @@ namespace MSNTools
             {
                 PlayerChecks.Exec();
             }
-
+            if (AntiCollapse.IsEnabled)
+            {
+                AntiCollapse.Exec();
+            }
             if (_twoSecondTick >= 2)
             {
                 _twoSecondTick = 0;
@@ -68,6 +73,10 @@ namespace MSNTools
             if (_oneMinTick >= 60)
             {
                 _oneMinTick = 0;
+                if (Bank.IsEnabled)
+                {
+                    Bank.CheckGiveMoneyEveryTime();
+                }
             }
             if (_twoMinTick >= 120)
             {
@@ -76,6 +85,7 @@ namespace MSNTools
                 {
                     InventoryChecks.CheckStoragesInLoadedChunks();
                 }
+                PersistentContainer.Instance.Save();
             }
             if (_fiveMinTick >= 300)
             {

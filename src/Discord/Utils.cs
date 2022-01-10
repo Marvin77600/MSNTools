@@ -2,11 +2,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using UnityEngine;
 
 namespace MSNTools.Discord
 {
@@ -17,12 +17,12 @@ namespace MSNTools.Discord
         /// </summary>
         /// <param name="color">Color to be converted</param>
         /// <returns>Converted hex integer</returns>
-        public static int ColorToHex(Color color)
+        public static int ColorToHex(Color32 color)
         {
             string HS =
-                color.R.ToString("X2") +
-                color.G.ToString("X2") +
-                color.B.ToString("X2");
+                color.r.ToString("X2") +
+                color.g.ToString("X2") +
+                color.b.ToString("X2");
 
             return int.Parse(HS, System.Globalization.NumberStyles.HexNumber);
         }
@@ -44,8 +44,8 @@ namespace MSNTools.Discord
                     json.Add(name, (bool)value);
                 else if (value is int)
                     json.Add(name, (int)value);
-                else if (value is Color)
-                    json.Add(name, ColorToHex((Color)value));
+                else if (value is Color32)
+                    json.Add(name, ColorToHex((Color32)value));
                 else if (value is string)
                     json.Add(name, value as string);
                 else if (value is DateTime)
