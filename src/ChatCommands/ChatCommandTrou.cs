@@ -34,7 +34,7 @@ namespace MSNTools.ChatCommands
             }
             catch (Exception e)
             {
-                Log.Out("Execute " + e.Message);
+                MSNUtils.LogError("Execute " + e.Message);
             }
         }
 

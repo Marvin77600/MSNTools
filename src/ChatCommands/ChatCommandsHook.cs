@@ -18,7 +18,7 @@ namespace MSNTools.ChatCommands
             string str = commands[0];
             if (_commandsList.ContainsKey(str))
             {
-                Log.Warning("Chat command with name \"" + str + "\" already loaded, not loading from class " + _className);
+                MSNUtils.LogWarning("Chat command with name \"" + str + "\" already loaded, not loading from class " + _className);
             }
             else
             {
@@ -30,7 +30,7 @@ namespace MSNTools.ChatCommands
         {
             try
             {
-                Log.Out("Register Chat Commands");
+                MSNUtils.Log("Register Chat Commands");
                 SortedList<string, IChatCommand> chatCommandsList = new SortedList<string, IChatCommand>();
                 ReflectionHelpers.FindTypesImplementingBase(typeof(IChatCommand), _type =>
                 {
@@ -40,7 +40,7 @@ namespace MSNTools.ChatCommands
                 foreach (IChatCommand chatCommand in chatCommandsList.Values)
                 {
                     chatCommands.Add(chatCommand);
-                    Log.Out($"{chatCommand.GetCommands()[0]}");
+                    MSNUtils.Log($"{chatCommand.GetCommands()[0]}");
                     for (int index = 0; index < chatCommand.GetCommands().Length; ++index)
                     {
                         string command = chatCommand.GetCommands()[index];
@@ -48,7 +48,7 @@ namespace MSNTools.ChatCommands
                         {
                             IChatCommand consoleCommand2;
                             if (m_CommandsAllVariants.TryGetValue(command, out consoleCommand2))
-                                Log.Warning("Command with alias \"" + command + "\" already registered from " + consoleCommand2.GetType().Name + ", not registering for class " + chatCommand.GetType().Name);
+                                MSNUtils.LogWarning("Command with alias \"" + command + "\" already registered from " + consoleCommand2.GetType().Name + ", not registering for class " + chatCommand.GetType().Name);
                             else
                                 m_CommandsAllVariants.Add(command, chatCommand);
                         }
@@ -57,8 +57,8 @@ namespace MSNTools.ChatCommands
             }
             catch (Exception ex)
             {
-                Log.Error($"{Config.ModPrefix} Error registering chat commands");
-                Log.Exception(ex);
+                MSNUtils.LogError($"Error registering chat commands");
+                MSNUtils.LogError($"{ex}");
             }
         }
 
@@ -88,7 +88,7 @@ namespace MSNTools.ChatCommands
                 {
                     if (GameManager.Instance.World == null)
                     {
-                        Log.Out("*** ERROR: Command '" + stringList[0] + "' can only be executed when a game is started.");
+                        MSNUtils.LogError("*** ERROR: Command '" + stringList[0] + "' can only be executed when a game is started.");
                     }
                     try
                     {
@@ -96,12 +96,12 @@ namespace MSNTools.ChatCommands
                     }
                     catch (Exception ex)
                     {
-                        Log.Out("*** ERROR: Executing command '" + stringList[0] + "' failed: " + ex.Message);
-                        Log.Exception(ex);
+                        MSNUtils.LogError("*** ERROR: Executing command '" + stringList[0] + "' failed: " + ex.Message);
+                        MSNUtils.LogError($"{ex}");
                     }
                 }
                 else
-                    Log.Out("*** ERROR: unknown command '" + stringList[0] + "'");
+                    MSNUtils.LogError("*** ERROR: unknown command '" + stringList[0] + "'");
             }
         }
 
@@ -204,7 +204,7 @@ namespace MSNTools.ChatCommands
             }
             catch (Exception e)
             {
-                Log.Out($"{Config.ModPrefix} Error in ChatCommandsHook.ChatMessage: {e.Message}");
+                MSNUtils.LogError($"Error in ChatCommandsHook.ChatMessage: {e.Message}");
             }
         }
     }

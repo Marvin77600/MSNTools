@@ -68,7 +68,7 @@ namespace MSNTools.ConsoleCommands
             }
             catch (Exception e)
             {
-                Log.Out("Execute " + e.Message);
+                MSNUtils.LogError("Execute " + e.Message);
             }
         }
 

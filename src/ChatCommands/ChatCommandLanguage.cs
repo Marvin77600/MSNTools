@@ -20,7 +20,6 @@ namespace MSNTools.ChatCommands
                     }
                     else
                     {
-                        Log.Out($"{language}");
                         language = StringToLanguageEnum(_params[0]);
                         PersistentContainer.Instance.Players[_clientInfo.PlatformId.ToString()].Language = StringToLanguageEnum(_params[0]);
                         PersistentContainer.DataChange = true;
@@ -31,7 +30,7 @@ namespace MSNTools.ChatCommands
             }
             catch (Exception e)
             {
-                Log.Out($"Execute " + e.Message);
+                MSNUtils.LogError($"Execute " + e.Message);
             }
         }
 
