@@ -6,9 +6,8 @@ namespace MSNTools.PersistentData
     [Serializable]
     public class PersistentPlayer
     {
-        private readonly string platformIdentifierString;
+        public readonly string platformIdentifierString;
         private MSNLocalization.Language language;
-        private int bank;
         private int playerWallet;
         private string playerName;
         private DateTime lastVote;
@@ -61,18 +60,6 @@ namespace MSNTools.PersistentData
             set
             {
                 isDonator = value;
-            }
-        }
-
-        public int Bank
-        {
-            get
-            {
-                return bank;
-            }
-            set
-            {
-                bank = value;
             }
         }
 

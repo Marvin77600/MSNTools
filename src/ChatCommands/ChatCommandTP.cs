@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace MSNTools.ChatCommands
 {
@@ -37,7 +38,7 @@ namespace MSNTools.ChatCommands
                                 {
                                     Vector3i bedrollPos = entityPlayer.SpawnPoints.GetPos();
                                     PrefabInstance prefab = GameManager.Instance.World.GetPOIAtPosition(bedrollPos.ToVector3());
-                                    if (prefab == null)
+                                    if (prefab == null || prefab.prefab.PrefabName.StartsWith("rwg"))
                                     {
                                         string pos = $"{bedrollPos.x}, {bedrollPos.y}, {bedrollPos.z}";
                                         string[] vs = pos.Split(new string[] { ",", ", ", " ," }, StringSplitOptions.RemoveEmptyEntries);
@@ -72,7 +73,6 @@ namespace MSNTools.ChatCommands
                                 }
                                 else
                                 {
-
                                     foreach (KeyValuePair<string, string> tpPosition in tpPositions)
                                     {
                                         ChatCommandsHook.ChatMessage(_clientInfo, $"{tpPosition.Key} : {tpPosition.Value}", -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
@@ -91,17 +91,11 @@ namespace MSNTools.ChatCommands
                                     }
                                     else
                                     {
-                                        if (Bank.HasEnoughMoney(_clientInfo))
-                                        {
-                                            PersistentContainer.Instance.Players[_clientInfo.PlatformId.ToString()].PlayerWallet -= TPCost;
-                                            PersistentContainer.DataChange = true;
-                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"teleportplayer {entityPlayer.entityId} {string.Join(" ", vs.ToArray())}", _clientInfo);
-                                        }
+                                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"teleportplayer {entityPlayer.entityId} {string.Join(" ", vs.ToArray())}", _clientInfo);
                                     }
                                 }
                             }
                         }
-
                         if (_params.Count == 2)
                         {
                             if (_params[0].ContainsCaseInsensitive("add"))
@@ -109,12 +103,13 @@ namespace MSNTools.ChatCommands
                                 if (tpPositions.Count < TPMaxCount)
                                 {
                                     PrefabInstance prefab = GameManager.Instance.World.GetPOIAtPosition(entityPlayer.position);
-                                    if (prefab == null)
+                                    if (prefab == null || prefab.prefab.PrefabName.StartsWith("rwg"))
                                     {
                                         if (tpPositions.ContainsKey(_params[1]))
                                         {
                                             string response = MSNLocalization.Get("sameTPPoint", language).Replace("{0}", _params[1]);
                                             ChatCommandsHook.ChatMessage(_clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
+                                            return;
                                         }
                                         else
                                         {
@@ -123,7 +118,13 @@ namespace MSNTools.ChatCommands
                                             ChatCommandsHook.ChatMessage(_clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
                                             PersistentContainer.Instance.Players[_clientInfo.PlatformId.ToString()].TPPositions = tpPositions;
                                             PersistentContainer.DataChange = true;
+                                            return;
                                         }
+                                    }
+                                    else if (Zones.IsInRegionReset(entityPlayer))
+                                    {
+                                        string response = MSNLocalization.Get("noTPInResetRegion", language);
+                                        ChatCommandsHook.ChatMessage(_clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
                                     }
                                     else
                                     {

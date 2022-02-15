@@ -47,13 +47,14 @@ namespace MSNTools
         private static void Exec()
         {
             if (PlayerChecks.GodEnabled || PlayerChecks.SpectatorEnabled)
-            {
                 PlayerChecks.Exec();
-            }
+
             if (AntiCollapse.IsEnabled)
-            {
                 AntiCollapse.Exec();
-            }
+
+            if (PlayerInvulnerabilityAtTrader.IsEnabled)
+                PlayerInvulnerabilityAtTrader.Exec();
+
             if (_twoSecondTick >= 2)
             {
                 _twoSecondTick = 0;
@@ -61,6 +62,8 @@ namespace MSNTools
             if (_fiveSecondTick >= 5)
             {
                 _fiveSecondTick = 0;
+                if (ResetRegions.IsEnabled)
+                    Zones.Exec();
             }
             if (_tenSecondTick >= 10)
             {
@@ -76,6 +79,7 @@ namespace MSNTools
                 if (Bank.IsEnabled)
                 {
                     Bank.CheckGiveMoneyEveryTime();
+                    Bank.FixedMaxMoney();
                 }
             }
             if (_twoMinTick >= 120)

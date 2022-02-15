@@ -23,7 +23,6 @@ namespace MSNTools
             {
                 if (GameManager.Instance.World != null && GameManager.Instance.World.Players.Count > 0 && GameManager.Instance.World.Players.dict.Count > 0)
                 {
-                    List<string> regionsReset = PersistentContainer.Instance.RegionsReset;
                     List<EntityPlayer> players = GameManager.Instance.World.Players.list;
 
                     for (int i = 0; i < players.Count; i++)
@@ -31,9 +30,8 @@ namespace MSNTools
                         EntityPlayer player = players[i];
                         if (player != null)
                         {
-                            double regionX = 0, regionZ = 0;
-                            string region = GetRegionFile(player, regionX, regionZ);
-                            if (regionsReset.Contains(region))
+                            string region = GetRegionFile(player);
+                            if (IsInRegionReset(player))
                             {
                                 player.Buffs.AddBuff(BuffResetZone);
                             }
@@ -52,10 +50,11 @@ namespace MSNTools
             }
         }
 
-        public static string GetRegionFile(EntityPlayer player, double x, double z)
+        public static string GetRegionFile(EntityPlayer player)
         {
             if (player != null)
             {
+                double x = 0, z = 0;
                 if (player.position.x < 0)
                 {
                     x = Math.Truncate(player.position.x / 512) - 1;
@@ -75,6 +74,13 @@ namespace MSNTools
                 return x + "." + z;
             }
             return string.Empty;
+        }
+
+        public static bool IsInRegionReset(EntityPlayer player)
+        {
+            string region = GetRegionFile(player);
+            List<string> regionsReset = PersistentContainer.Instance.RegionsReset;
+            return regionsReset.Contains(region);
         }
     }
 }

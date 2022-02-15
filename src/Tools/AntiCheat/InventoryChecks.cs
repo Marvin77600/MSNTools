@@ -66,7 +66,7 @@ namespace MSNTools
             }
             catch (Exception e)
             {
-                Log.Out($"{Config.ModPrefix} Error in InventoryChecks.CheckInv: {e.Message}");
+                MSNUtils.LogError($"Error in InventoryChecks.CheckInv: {e.Message}");
             }
         }
 
@@ -129,7 +129,7 @@ namespace MSNTools
             }
             catch (Exception e)
             {
-                Log.Out($"{Config.ModPrefix} Error in InventoryChecks.CheckStoragesInLoadedChunks: {e.Message}");
+                MSNUtils.LogError($"Error in InventoryChecks.CheckStoragesInLoadedChunks: {e.Message}");
             }
         }
 

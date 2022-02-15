@@ -59,7 +59,7 @@ namespace MSNTools
             }
             catch (Exception e)
             {
-                Log.Out($"{Config.ModPrefix} Error in AntiCollapse.Exec: {e.Message}");
+                MSNUtils.LogError($"Error in AntiCollapse.Exec: {e.Message}");
             }
         }
 
@@ -85,7 +85,7 @@ namespace MSNTools
             }
             catch (Exception e)
             {
-                Log.Out($"{Config.ModPrefix} Error in AntiCollapse.GetPlayersNearCollapsePosition: {e.Message}");
+                MSNUtils.LogError($"Error in AntiCollapse.GetPlayersNearCollapsePosition: {e.Message}");
             }
             return null;
         }

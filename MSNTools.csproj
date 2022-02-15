@@ -36,15 +36,19 @@
     <Reference Include="0Harmony, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>D:\Jeux Steam\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\0Harmony.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="7dtd-server-fixes">
+      <HintPath>D:\Jeux Steam\steamapps\common\7 Days to Die Dedicated Server\Mods\Allocs_CommonFunc\7dtd-server-fixes.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>D:\Jeux Steam\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\7 Days To Die\7DaysToDie_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="LitJson, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -52,11 +56,14 @@
     </Reference>
     <Reference Include="LogLibrary">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\7 Days To Die\7DaysToDie_Data\Managed\LogLibrary.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MapRendering">
+      <HintPath>D:\Jeux Steam\steamapps\common\7 Days to Die Dedicated Server\Mods\Allocs_WebAndMapRendering\MapRendering.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>7dtd-binaries\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Noemax.GZip, Version=17.269.5336.0, Culture=neutral, PublicKeyToken=4c0defa954f97f18, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -64,24 +71,39 @@
     </Reference>
     <Reference Include="Pathfinding.Ionic.Zip.Reduced">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\7 Days To Die\7DaysToDie_Data\Managed\Pathfinding.Ionic.Zip.Reduced.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Core">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\7 Days To Die\7DaysToDie_Data\Managed\UnityEngine.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\7 Days To Die\7DaysToDie_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -93,10 +115,21 @@
     <Compile Include="src\ChatCommands\ChatCommandLanguage.cs" />
     <Compile Include="src\ChatCommands\ChatCommandsHook.cs" />
     <Compile Include="src\ChatCommands\ChatCommandTP.cs" />
+    <Compile Include="src\ChatCommands\ChatCommandTPToServerLocations.cs" />
     <Compile Include="src\ChatCommands\ChatCommandVote.cs" />
     <Compile Include="src\ChatCommands\IChatCommand.cs" />
     <Compile Include="src\ChatCommands\ChatCommandTrou.cs" />
+    <Compile Include="src\ConsoleCommands\AddItemException.cs" />
+    <Compile Include="src\ConsoleCommands\CheckItemCreativeMode.cs" />
+    <Compile Include="src\ConsoleCommands\GetPlayerData.cs" />
+    <Compile Include="src\ConsoleCommands\PlaceBlock.cs" />
+    <Compile Include="src\ConsoleCommands\DiscordBot.cs" />
     <Compile Include="src\ConsoleCommands\Donator.cs" />
+    <Compile Include="src\ConsoleCommands\ResetRegions.cs" />
+    <Compile Include="src\ConsoleCommands\ResetRegionsDataLivemap.cs" />
+    <Compile Include="src\ConsoleCommands\ServerLocations.cs" />
+    <Compile Include="src\ConsoleCommands\GetResetRegionFilesTime.cs" />
+    <Compile Include="src\ConsoleCommands\SetResetRegionFilesTime.cs" />
     <Compile Include="src\CustomModEvents\CustomEvents.cs" />
     <Compile Include="src\CustomModEvents\CustomModEvent.cs" />
     <Compile Include="src\CustomModEvents\CustomModEventAbs.cs" />
@@ -120,9 +153,16 @@
     <Compile Include="src\PersistentData\PersistentPlayer.cs" />
     <Compile Include="src\PersistentData\PersistentPlayers.cs" />
     <Compile Include="src\PersistentOperations\PersistentOperations.cs" />
-    <Compile Include="src\Serializable\ItemDataSerializable.cs" />
     <Compile Include="src\Tools\Bank\Bank.cs" />
-    <Compile Include="src\Tools\POIProtection\POIProtection.cs" />
+    <Compile Include="src\Tools\DiscordBot\DiscordBot.cs" />
+    <Compile Include="src\Tools\PlayerInvulnerabilityAtTrader\PlayerInvulnerabilityAtTrader.cs" />
+    <Compile Include="src\Tools\Zones\ResetRegions.cs" />
+    <Compile Include="src\Tools\Zones\Zones.cs" />
+    <Compile Include="src\Utils\Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

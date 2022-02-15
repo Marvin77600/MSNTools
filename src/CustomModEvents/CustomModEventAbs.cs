@@ -25,7 +25,7 @@ namespace MSNTools
             {
                 _mod = ModManager.GetModForAssembly(callingAssembly);
                 if (_mod == null)
-                    Log.Warning("[MODS] Could not find mod that tries to register a handler for event " + eventName);
+                    MSNUtils.LogWarning("[MODS] Could not find mod that tries to register a handler for event " + eventName);
             }
             receivers.Add(new Receiver(_mod, _handlerFunc, _coreGame));
         }

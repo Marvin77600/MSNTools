@@ -24,7 +24,7 @@ namespace MSNTools
                         string regionDir = GameIO.GetSaveGameRegionDir();
                         if (Directory.Exists(regionDir))
                         {
-                            string[] files = Directory.GetFiles(regionDir, "*.7rg", SearchOption.AllDirectories);
+                            string[] files = Directory.GetFiles(regionDir, "*.7rg");
                             if (files != null && files.Length > 0)
                             {
                                 foreach (var file in files)
@@ -40,8 +40,8 @@ namespace MSNTools
                                         }
                                     }
                                 }
-                                nextResetRegionFilesTime = new DateTime(nextResetRegionFilesTime.Year, nextResetRegionFilesTime.Month, Day + nextResetRegionFilesTime.Day);
-                                PersistentContainer.Instance.TimeRegionFiles = nextResetRegionFilesTime;
+                                PersistentContainer.Instance.TimeRegionFiles = new DateTime(nextResetRegionFilesTime.Year, nextResetRegionFilesTime.Month, nextResetRegionFilesTime.Day + Day);
+                                PersistentContainer.DataChange = true;
                                 MSNUtils.Log($"Next Reset Regions : {nextResetRegionFilesTime}");
                             }
                         }

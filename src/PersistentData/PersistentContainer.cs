@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using JetBrains.Annotations;
-using MSNTools.PersistentData;
 
 namespace MSNTools.PersistentData
 {
@@ -16,12 +14,10 @@ namespace MSNTools.PersistentData
         private static PersistentContainer instance;
         private PersistentPlayers players;
         private static bool Saving = false;
-        private Dictionary<int, int> auctionPrices;
-        private Dictionary<int, int> backpacks;
-        private Dictionary<int, List<int>> clientMuteList;
-        private DateTime lastWeather;
         private List<string> protectedZones;
         private List<string> regionReset;
+        private DateTime timeResetRegionFiles;
+        private Dictionary<string, string[]> serverLocations;
 
         public static PersistentContainer Instance
         {
@@ -73,7 +69,7 @@ namespace MSNTools.PersistentData
             catch (Exception e)
             {
                 Saving = false;
-                Log.Out($"{Config.ModPrefix} Exception in PersistentContainer.Save: {e.Message}");
+                MSNUtils.LogError($"Exception in PersistentContainer.Save: {e.Message}");
             }
         }
 
@@ -104,56 +100,36 @@ namespace MSNTools.PersistentData
             }
             catch (Exception e)
             {
-                Log.Out($"{Config.ModPrefix} Exception in PersistentContainer.Load: {e.Message}");
+                MSNUtils.LogError($"Exception in PersistentContainer.Load: {e.Message}");
             }
             return false;
         }
 
-        public Dictionary<int, int> AuctionPrices
+        public Dictionary<string, string[]> ServerLocations
         {
             get
             {
-                return auctionPrices;
+                if (serverLocations == null)
+                {
+                    serverLocations = new Dictionary<string, string[]>();
+                }
+                return serverLocations;
             }
             set
             {
-                auctionPrices = value;
+                serverLocations = value;
             }
         }
 
-        public Dictionary<int, int> Backpacks
+        public DateTime TimeRegionFiles
         {
             get
             {
-                return backpacks;
+                return timeResetRegionFiles;
             }
             set
             {
-                backpacks = value;
-            }
-        }
-
-        public Dictionary<int, List<int>> ClientMuteList
-        {
-            get
-            {
-                return clientMuteList;
-            }
-            set
-            {
-                clientMuteList = value;
-            }
-        }
-
-        public DateTime LastWeather
-        {
-            get
-            {
-                return lastWeather;
-            }
-            set
-            {
-                lastWeather = value;
+                timeResetRegionFiles = value;
             }
         }
 
@@ -161,6 +137,10 @@ namespace MSNTools.PersistentData
         {
             get
             {
+                if (protectedZones == null)
+                {
+                    protectedZones = new List<string>();
+                }
                 return protectedZones;
             }
             set
@@ -169,10 +149,14 @@ namespace MSNTools.PersistentData
             }
         }
 
-        public List<string> RegionReset
+        public List<string> RegionsReset
         {
             get
             {
+                if (regionReset == null)
+                {
+                    regionReset = new List<string>();
+                }
                 return regionReset;
             }
             set

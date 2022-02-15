@@ -35,7 +35,7 @@ namespace MSNTools
                                         if (player.IsSpectator)
                                         {
                                             SdtdConsole.Instance.ExecuteSync($"ban add {_cInfo.entityId} 10 years \"Caught in spectator mode\"", null);
-                                            Log.Warning($"{Config.ModPrefix} Detected \"{_cInfo.playerName}\", Steam Id {steamID}, using spectator mode @ {(int)player.position.x} {(int)player.position.y} {(int)player.position.z}");
+                                            MSNUtils.LogWarning($"Detected \"{_cInfo.playerName}\", Steam Id {steamID}, using spectator mode @ {(int)player.position.x} {(int)player.position.y} {(int)player.position.z}");
                                             if (DiscordWebhookSender.SanctionsEnabled)
                                                 DiscordWebhookSender.SendSanctionEmbedToWebHook(player.position, _cInfo, $"Ban de {_cInfo.playerName}", "Détecté en mode spectateur");
                                             continue;
@@ -46,7 +46,7 @@ namespace MSNTools
                                         if (player.Buffs.HasBuff("god"))
                                         {
                                             SdtdConsole.Instance.ExecuteSync($"ban add {_cInfo.entityId} 10 years \"Caught in god mode\"", null);
-                                            Log.Warning($"{Config.ModPrefix} Detected \"{_cInfo.playerName}\", Steam id {steamID}, using god mode @ {(int)player.position.x} {(int)player.position.y} {(int)player.position.z}");
+                                            MSNUtils.LogWarning($"Detected \"{_cInfo.playerName}\", Steam id {steamID}, using god mode @ {(int)player.position.x} {(int)player.position.y} {(int)player.position.z}");
                                             if (DiscordWebhookSender.SanctionsEnabled)
                                                 DiscordWebhookSender.SendSanctionEmbedToWebHook(player.position, _cInfo, $"Ban de {_cInfo.playerName}", "Détecté en god mode");
                                             continue;
@@ -60,7 +60,7 @@ namespace MSNTools
             }
             catch (Exception e)
             {
-                Log.Out($"{Config.ModPrefix} Error in PlayerChecks.Exec: {e.Message}");
+                MSNUtils.LogError($"Error in PlayerChecks.Exec: {e.Message}");
             }
         }
     }

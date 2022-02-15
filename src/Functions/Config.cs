@@ -17,9 +17,8 @@ namespace MSNTools
         public static string GameVersion = $"{Constants.cVersionMajor}.{Constants.cVersionMinor} (b{Constants.cVersionBuild})";
         public static string ModPrefix = $"[{ModName.ToUpper()}]", Server_Response_Name = $"{ModName}", Chat_Response_Color = "[00FF00]";
         public static string ConfigPath = $"{GamePrefs.GetString(EnumGamePrefs.SaveGameFolder)}/{ModName}";
-        private static string ConfigFile = $"{ModName}Config.xml";
+        public static string ConfigFile = $"{ModName}Config.xml";
         public static string ConfigFilePath = $"{ConfigPath}/{ConfigFile}";
-        
 
         private static FileSystemWatcher FileWatcher = new FileSystemWatcher();
 
@@ -43,13 +42,15 @@ namespace MSNTools
                 {
                     {"Alerts_Webhook", new List<string> { "Enable", "Webhook_Url", "Color" } },
                     {"Anti_Collapse", new List<string> { "Enable", "Min_Entities_Detected"} },
-                    {"Bank", new List<string> { "Enable", "Gain_Every_Hours", "Donator_Gain_Every_Hours", "Devise_Name"} },
+                    {"Bank", new List<string> { "Enable", "Gain_Every_Hours", "Donator_Gain_Every_Hours", "Hour", "Devise_Name", "Max"} },
                     {"Chat_Commands", new List<string> { "Enable", "Prefix"} },
                     {"Chat_Webhook", new List<string> { "Enable", "Webhook_Url" } },
                     {"Godmode_Detector", new List<string> { "Enable", "Admin_Level" } },
                     {"High_Ping_Kicker", new List<string> { "Enable", "Max_Ping", "Flags" } },
                     {"Inventory_Check", new List<string> { "Enable", "Admin_Level", "Check_Storage", "Exceptions_Items" } },
                     {"Player_Infos_Webhook", new List<string> { "Enable", "Webhook_Url", "Connected_Color", "Disconnected_Color" } },
+                    {"Player_Invulnerability_At_Trader", new List<string> { "Enable" } },
+                    {"Reset_Regions", new List<string> { "Enable", "Day", "Hour", "Buff_Reset_Zones" } },
                     {"Sanctions_Webhook", new List<string> { "Enable", "Webhook_Url", "Color" } },
                     {"Server_Infos_Webhook", new List<string> { "Enable", "Webhook_Url", "Connected_Color", "Disconnected_Color" } },
                     {"Spectator_Detector", new List<string> { "Enable", "Admin_Level" } },
@@ -61,11 +62,11 @@ namespace MSNTools
 
         public static void Load()
         {
-            Log.Out($"{ModPrefix} Checking for save directory {ConfigPath}");
+            MSNUtils.Log($"Checking for save directory {ConfigPath}");
             if (!Directory.Exists(ConfigPath))
             {
                 Directory.CreateDirectory(ConfigPath);
-                Log.Out($"{ModPrefix} Created directory {ConfigPath}");
+                MSNUtils.Log($"Created directory {ConfigPath}");
             }
             LoadXml();
             InitFileWatcher();
@@ -73,9 +74,9 @@ namespace MSNTools
 
         public static void LoadXml()
         {
-            Log.Out("---------------------------------------------------------------");
-            Log.Out($"{ModPrefix} Verifying configuration file & Saving new entries");
-            Log.Out("---------------------------------------------------------------");
+            MSNUtils.Log("---------------------------------------------------------------");
+            MSNUtils.Log($"Verifying configuration file & Saving new entries");
+            MSNUtils.Log("---------------------------------------------------------------");
             if (!File.Exists(ConfigFilePath))
             {
                 WriteXml();
@@ -87,7 +88,7 @@ namespace MSNTools
             }
             catch (XmlException e)
             {
-                Log.Error($"{ModPrefix} Failed loading {ConfigFilePath}: {e.Message}");
+                Log.Error($"Failed loading {ConfigFilePath}: {e.Message}");
                 return;
             }
             foreach (XmlNode childNode in xmlDoc.DocumentElement.ChildNodes)
@@ -100,13 +101,13 @@ namespace MSNTools
                     }
                     if (subChild.NodeType != XmlNodeType.Element)
                     {
-                        Log.Warning($"{ModPrefix} Unexpected XML node found in '{childNode.Name}' section: {subChild.OuterXml}");
+                        MSNUtils.LogWarning($"Unexpected XML node found in '{childNode.Name}' section: {subChild.OuterXml}");
                         continue;
                     }
                     XmlElement _line = (XmlElement)subChild;
                     if (!_line.HasAttribute("Name"))
                     {
-                        Log.Warning($"{ModPrefix} Ignoring {subChild.Name} entry in {ConfigFile} because of missing 'Name' attribute: {subChild.OuterXml}");
+                        MSNUtils.LogWarning($"Ignoring {subChild.Name} entry in {ConfigFile} because of missing 'Name' attribute: {subChild.OuterXml}");
                         continue;
                     }
                     foreach (string nameAttribute in ConfigFileStruct[childNode.Name].Keys)
@@ -118,7 +119,7 @@ namespace MSNTools
                         {
                             if (!_line.HasAttribute(paramName))
                             {
-                                Log.Warning($"{ModPrefix} Ignoring {nameAttribute} entry in {ConfigFile} because of missing '{paramName}' attribute: {subChild.OuterXml}");
+                                MSNUtils.LogWarning($"Ignoring {nameAttribute} entry in {ConfigFile} because of missing '{paramName}' attribute: {subChild.OuterXml}");
                                 break;
                             }
                             else
@@ -131,7 +132,7 @@ namespace MSNTools
                                     {
                                         if (attribute != ModVersion)
                                         {
-                                            Log.Out($"{ModPrefix} Detected updated version of {ModName}");
+                                            MSNUtils.Log($"Detected updated version of {ModName}");
                                             string[] _files = Directory.GetFiles(ConfigPath, "*.xml");
                                             if (!Directory.Exists(ConfigPath + "/XMLBackups"))
                                             {
@@ -154,7 +155,7 @@ namespace MSNTools
                                                     }
                                                     WriteXml();
                                                     //Config.UpgradeXml(xmlDoc.DocumentElement.ChildNodes[1].ChildNodes);
-                                                    Log.Out($"{ModPrefix} Created backup of xml files for version {attribute}");
+                                                    MSNUtils.Log($"Created backup of xml files for version {attribute}");
                                                 }
                                             }
                                         }
@@ -228,9 +229,19 @@ namespace MSNTools
                                                 if (!TryParseInt(attribute, out Bank.DonatorGainEveryHours, nameAttribute, paramName, subChild))
                                                     continue;
                                             }
+                                            else if (paramName == "Hour")
+                                            {
+                                                if (!TryParseInt(attribute, out Bank.Hours, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
                                             else if (paramName == "Gain_Every_Hours")
                                             {
                                                 if (!TryParseInt(attribute, out Bank.GainEveryHours, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "Max")
+                                            {
+                                                if (!TryParseInt(attribute, out Bank.Max, nameAttribute, paramName, subChild))
                                                     continue;
                                             }
                                             break;
@@ -328,6 +339,35 @@ namespace MSNTools
                                             else if (paramName == "Disconnected_Color")
                                             {
                                                 if (!TryParseColor(attribute, out DiscordWebhookSender.PlayerDisconnectedColor, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            break;
+                                        case "Player_Invulnerability_At_Trader":
+                                            if (paramName == "Enable")
+                                            {
+                                                if (!TryParseBool(attribute, out PlayerInvulnerabilityAtTrader.IsEnabled, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            break;
+                                        case "Reset_Regions":
+                                            if (paramName == "Enable")
+                                            {
+                                                if (!TryParseBool(attribute, out ResetRegions.IsEnabled, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "Day")
+                                            {
+                                                if (!TryParseInt(attribute, out ResetRegions.Day, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "Hour")
+                                            {
+                                                if (!TryParseInt(attribute, out ResetRegions.Hour, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "Buff_Reset_Zones")
+                                            {
+                                                if (!TryParseString(attribute, out Zones.BuffResetZone, nameAttribute, paramName, subChild))
                                                     continue;
                                             }
                                             break;
@@ -446,13 +486,15 @@ namespace MSNTools
                 sw.WriteLine("    <Tools>");
                 sw.WriteLine($"        <Tool Name=\"Alerts_Webhook\" Enable=\"{DiscordWebhookSender.AlertsEnabled}\" Webhook_Url=\"{DiscordWebhookSender.AlertsWekHookUrl}\" Color=\"{DiscordWebhookSender.AlertsColor.r},{DiscordWebhookSender.AlertsColor.g},{DiscordWebhookSender.AlertsColor.b}\" />");
                 sw.WriteLine($"        <Tool Name=\"Anti_Collapse\" Enable=\"{AntiCollapse.IsEnabled}\" Min_Entities_Detected=\"{AntiCollapse.MinEntitiesDetected}\" />");
-                sw.WriteLine($"        <Tool Name=\"Bank\" Enable=\"{Bank.IsEnabled}\" Donator_Gain_Every_Hours=\"{Bank.DonatorGainEveryHours}\" Gain_Every_Hours=\"{Bank.GainEveryHours}\" Devise_Name=\"{Bank.DeviseName}\" />");
+                sw.WriteLine($"        <Tool Name=\"Bank\" Enable=\"{Bank.IsEnabled}\" Donator_Gain_Every_Hours=\"{Bank.DonatorGainEveryHours}\" Gain_Every_Hours=\"{Bank.GainEveryHours}\" Devise_Name=\"{Bank.DeviseName}\" Max=\"{Bank.Max}\" />");
                 sw.WriteLine($"        <Tool Name=\"Chat_Commands\" Enable=\"{ChatCommandsHook.ChatCommandsEnabled}\" Prefix=\"{ChatCommandsHook.ChatCommandsPrefix}\" />");
-                sw.WriteLine($"        <Tool Name=\"Chat_Webhook\" Enable=\"{DiscordWebhookSender.ChatEnabled}\" Prefix=\"{ChatCommandsHook.ChatCommandsPrefix}\"  Webhook_Url=\"{DiscordWebhookSender.ChatWebHookUrl}\" />");
+                sw.WriteLine($"        <Tool Name=\"Chat_Webhook\" Enable=\"{DiscordWebhookSender.ChatEnabled}\" Webhook_Url=\"{DiscordWebhookSender.ChatWebHookUrl}\" />");
                 sw.WriteLine($"        <Tool Name=\"Godmode_Detector\" Enable=\"{PlayerChecks.GodEnabled}\" Admin_Level=\"{PlayerChecks.God_Admin_Level}\" />");
                 //sw.WriteLine($"        <Tool Name=\"High_Ping_Kicker\" Enable=\"{0}\" Max_Ping=\"{1}\" Flags=\"{2}\" />");
                 sw.WriteLine($"        <Tool Name=\"Inventory_Check\" Enable=\"{InventoryChecks.IsEnabled}\" Admin_Level=\"{InventoryChecks.Admin_Level}\" Check_Storage=\"{InventoryChecks.Check_Storage}\" Exceptions_Items=\"{InventoryChecks.Exceptions_Items}\" />");
                 sw.WriteLine($"        <Tool Name=\"Player_Infos_Webhook\" Enable=\"{DiscordWebhookSender.PlayerInfosEnabled}\" Webhook_Url=\"{DiscordWebhookSender.PlayerInfosWebHookUrl}\" Connected_Color=\"{DiscordWebhookSender.PlayerConnectedColor.r},{DiscordWebhookSender.PlayerConnectedColor.g},{DiscordWebhookSender.PlayerConnectedColor.b}\" Disconnected_Color=\"{DiscordWebhookSender.PlayerDisconnectedColor.r},{DiscordWebhookSender.PlayerDisconnectedColor.g},{DiscordWebhookSender.PlayerDisconnectedColor.b}\" />");
+                sw.WriteLine($"        <Tool Name=\"Player_Invulnerability_At_Trader\" Enable=\"{PlayerInvulnerabilityAtTrader.IsEnabled}\" />");
+                sw.WriteLine($"        <Tool Name=\"Reset_Regions\" Enable=\"{ResetRegions.IsEnabled}\" Day=\"{ResetRegions.Day}\" Hour=\"{ResetRegions.Hour}\" Buff_Reset_Zones=\"{Zones.BuffResetZone}\" />");
                 sw.WriteLine($"        <Tool Name=\"Server_Infos_Webhook\" Enable=\"{DiscordWebhookSender.ServerInfosEnabled}\" Webhook_Url=\"{DiscordWebhookSender.ServerInfosWebHookUrl}\" Connected_Color=\"{DiscordWebhookSender.ServerOnlineColor.r},{DiscordWebhookSender.ServerOnlineColor.g},{DiscordWebhookSender.ServerOnlineColor.b}\" Disconnected_Color=\"{DiscordWebhookSender.ServerOfflineColor.r},{DiscordWebhookSender.ServerOfflineColor.g},{DiscordWebhookSender.ServerOfflineColor.b}\" />");
                 sw.WriteLine($"        <Tool Name=\"Sanctions_Webhook\" Enable=\"{DiscordWebhookSender.SanctionsEnabled}\" Webhook_Url=\"{DiscordWebhookSender.SanctionsWebHookUrl}\" Color=\"{DiscordWebhookSender.SanctionsColor.r},{DiscordWebhookSender.SanctionsColor.g},{DiscordWebhookSender.SanctionsColor.b}\"/>");
                 sw.WriteLine($"        <Tool Name=\"Spectator_Detector\" Enable=\"{PlayerChecks.SpectatorEnabled}\" Admin_Level=\"{PlayerChecks.Spectator_Admin_Level}\" />");
@@ -479,8 +521,6 @@ namespace MSNTools
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
             LoadXml();
-            //Mods.Load(false);
-            //ActiveTools.Exec(false);
         }
 
         public static void UpgradeXml(XmlNodeList _oldRootNodes)
@@ -538,7 +578,7 @@ namespace MSNTools
             }
             catch (Exception e)
             {
-                Log.Out($"{ModPrefix} Error in Config.UpgradeXml: {e.Message}");
+                MSNUtils.LogError($"Error in Config.UpgradeXml: {e.Message}");
             }
             FileWatcher.EnableRaisingEvents = true;
         }
@@ -547,7 +587,7 @@ namespace MSNTools
         {
             bool parse = bool.TryParse(value, out result);
             if (!parse)
-                Log.Warning($"{ModPrefix} Ignoring {nameAttribute} entry in {ConfigFile} because of invalid (True/False) value for '{paramName}' attribute: {node.OuterXml}");
+                MSNUtils.LogWarning($"Ignoring {nameAttribute} entry in {ConfigFile} because of invalid (True/False) value for '{paramName}' attribute: {node.OuterXml}");
             return parse;
         }
 
@@ -555,7 +595,7 @@ namespace MSNTools
         {
             bool parse = int.TryParse(value, out result);
             if (!parse)
-                Log.Warning($"{ModPrefix} Ignoring {nameAttribute} entry in {ConfigFile} because of invalid (non-numeric) value for '{paramName}' attribute: {node.OuterXml}");
+                MSNUtils.LogWarning($"Ignoring {nameAttribute} entry in {ConfigFile} because of invalid (non-numeric) value for '{paramName}' attribute: {node.OuterXml}");
             return parse;
         }
 
@@ -569,7 +609,7 @@ namespace MSNTools
             else
             {
                 result = string.Empty;
-                Log.Warning($"{ModPrefix} Ignoring {nameAttribute} entry in {ConfigFile} because of invalid string value for '{paramName}' attribute: {node.OuterXml}");
+                MSNUtils.LogWarning($"Ignoring {nameAttribute} entry in {ConfigFile} because of invalid string value for '{paramName}' attribute: {node.OuterXml}");
                 return false;
             }
         }
@@ -590,7 +630,7 @@ namespace MSNTools
             else
             {
                 result = new List<string>();
-                Log.Warning($"{ModPrefix} Ignoring {nameAttribute} entry in {ConfigFile} because of invalid string value for '{paramName}' attribute: {node.OuterXml}");
+                MSNUtils.LogWarning($"Ignoring {nameAttribute} entry in {ConfigFile} because of invalid string value for '{paramName}' attribute: {node.OuterXml}");
                 return false;
             }
         }
@@ -604,7 +644,7 @@ namespace MSNTools
             }
             else
             {
-                Log.Warning($"{ModPrefix} Ignoring {nameAttribute} entry in {ConfigFile} because of invalid url value for '{paramName}' attribute: {node.OuterXml}");
+                MSNUtils.LogWarning($"Ignoring {nameAttribute} entry in {ConfigFile} because of invalid url value for '{paramName}' attribute: {node.OuterXml}");
                 result = string.Empty;
                 return false;
             }
@@ -628,14 +668,14 @@ namespace MSNTools
                 }
                 else
                 {
-                    Log.Warning($"{ModPrefix} Ignoring {nameAttribute} entry in {ConfigFile} because of invalid color value for '{paramName}' attribute: {node.OuterXml}");
+                    MSNUtils.LogWarning($"Ignoring {nameAttribute} entry in {ConfigFile} because of invalid color value for '{paramName}' attribute: {node.OuterXml}");
                     color = Color.white;
                     return false;
                 }
             }
             catch (Exception e)
             {
-                Log.Out($"{ModPrefix} Error in Config.TryParseColor: {e.Message}");
+                MSNUtils.LogError($"Error in Config.TryParseColor: {e.Message}");
             }
             color = Color.white;
             return false;

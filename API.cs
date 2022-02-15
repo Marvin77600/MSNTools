@@ -5,30 +5,82 @@ using MSNTools.PersistentData;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 
 namespace MSNTools
 {
     public class API : IModApi
     {
+        public static Mod Mod;
+
         public void InitMod(Mod _modInstance)
         {
-            ModEvents.SavePlayerData.RegisterHandler(SavePlayerData);
-            ModEvents.ChatMessage.RegisterHandler(ChatMessage);
-            ModEvents.PlayerSpawnedInWorld.RegisterHandler(PlayerSpawnedInWorld);
-            ModEvents.PlayerDisconnected.RegisterHandler(PlayerDisconnected);
-            ModEvents.GameStartDone.RegisterHandler(GameStartDone);
-            ModEvents.GameShutdown.RegisterHandler(GameShutdown);
-            ModEvents.GameAwake.RegisterHandler(GameAwake);
-            CustomModEvents.AwardKill.RegisterHandler(AwardKill);
-            Log.Out($"{Config.ModName} chargé");
-            var harmony = new HarmonyX(GetType().ToString());
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            try
+            {
+                Mod = _modInstance;
+                ModEvents.SavePlayerData.RegisterHandler(SavePlayerData);
+                ModEvents.ChatMessage.RegisterHandler(ChatMessage);
+                ModEvents.PlayerSpawnedInWorld.RegisterHandler(PlayerSpawnedInWorld);
+                //ModEvents.PlayerLogin.RegisterHandler(PlayerLogin);
+                ModEvents.PlayerDisconnected.RegisterHandler(PlayerDisconnected);
+                ModEvents.GameStartDone.RegisterHandler(GameStartDone);
+                ModEvents.GameShutdown.RegisterHandler(GameShutdown);
+                ModEvents.GameAwake.RegisterHandler(GameAwake);
+                CustomModEvents.AwardKill.RegisterHandler(AwardKill);
+                //CustomModEvents.BlockChange.RegisterHandler(BlockChange);
+                MSNUtils.Log($"Mod chargé");
+                var harmony = new HarmonyX(GetType().ToString());
+                harmony.PatchAll(Assembly.GetExecutingAssembly());
+            }
+            catch (Exception e)
+            {
+                MSNUtils.LogError($"Error in API.InitMod: {e.Message}");
+            }
+        }
+
+        private bool PlayerLogin(ClientInfo _cInfo, string _message, StringBuilder _stringBuild)
+        {
+            try
+            {
+                if (PersistentOperations.IsBloodmoon() && _cInfo != null)
+                {
+                    MSNLocalization.Language language = PersistentContainer.Instance.Players[_cInfo.PlatformId.ToString()].Language;
+                    string response = MSNLocalization.Get("noEnoughMoney", language);
+                    PlayerDataFile pdf = PersistentOperations.GetPlayerDataFileFromUId(_cInfo.PlatformId);
+                    if (pdf != null)
+                    {
+                        if (pdf.totalTimePlayed < 5)
+                        {
+                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"kick {_cInfo.CrossplatformId.CombinedString} \"{response}\"", null);
+                        }
+                    }
+                    else
+                    {
+                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"kick {_cInfo.CrossplatformId.CombinedString} \"{response}\"", null);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MSNUtils.LogError($"Error in API.PlayerLogin: {e.Message}");
+            }
+            return true;
         }
 
         private void GameAwake()
         {
-            MSNLocalization.Init();
-            ChatCommandsHook.RegisterChatCommands();
+            try
+            {
+                PersistentContainer.Instance.Load();
+                MSNLocalization.Init();
+                ChatCommandsHook.RegisterChatCommands();
+                ResetRegions.Exec();
+            }
+            catch (Exception e)
+            {
+                MSNUtils.LogError($"Error in API.GameAwake: {e.Message}");
+                throw;
+            }
         }
 
         private void AwardKill(EntityAlive __instance, EntityAlive killer)
@@ -41,26 +93,29 @@ namespace MSNTools
                     ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(player.entityId);
                     if (cInfo != null)
                     {
-                        if (PersistentContainer.Instance.Players[cInfo.PlatformId.ToString()].IsDonator)
+                        if (!Bank.HaveMaxMoney(cInfo))
                         {
-                            Log.Warning($"Don de {Bank.DonatorGainEveryHours} {Bank.DeviseName}");
-                            PersistentContainer.Instance.Players[cInfo.PlatformId.ToString()].PlayerWallet += Bank.DonatorGainEveryHours;
+                            if (PersistentContainer.Instance.Players[cInfo.PlatformId.ToString()].IsDonator)
+                            {
+                                MSNUtils.LogWarning($"Don de {Bank.DonatorGainEveryHours} {Bank.DeviseName}");
+                                Bank.GiveMoney(cInfo, Bank.DonatorGainEveryHours);
+                            }
+                            else
+                            {
+                                Bank.GiveMoney(cInfo, Bank.GainEveryHours);
+                            }
+                            PersistentContainer.DataChange = true;
                         }
-                        else
-                        {
-                            PersistentContainer.Instance.Players[cInfo.PlatformId.ToString()].PlayerWallet += Bank.GainEveryHours;
-                        }
-                        PersistentContainer.DataChange = true;
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Out($"{Config.ModPrefix} Error in PatchProcessDamageEntityAlive.Postfix: {e.Message}");
+                MSNUtils.LogError($"Error in API.AwardKill: {e.Message}");
             }
         }
-
-        private static void SavePlayerData(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
+        
+        private void SavePlayerData(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
         {
             try
             {
@@ -78,33 +133,44 @@ namespace MSNTools
             }
             catch (Exception e)
             {
-                Log.Out($"{Config.ModPrefix} Error in API.SavePlayerData: {e.Message}");
+                MSNUtils.LogError($"Error in API.SavePlayerData: {e.Message}");
             }
         }
 
-        private static void GameStartDone()
+        private void BlockChange(GameManager _gameManager, PlatformUserIdentifierAbs _platformUserIdentifierAbs, List<BlockChangeInfo> _blockChangeInfos)
+        {
+            CheckChangeBlocks.Exec(_gameManager, _platformUserIdentifierAbs, _blockChangeInfos);
+        }
+
+        private void GameStartDone()
         {
             try
             {
                 Config.Load();
                 Timers.TimerStart();
                 ModEventsDiscordBehaviour.GameStartDone();
-                PersistentContainer.Instance.Load();
             }
             catch (Exception e)
             {
-                Log.Out($"{Config.ModPrefix} Error in API.GameStartDone: {e.Message}");
+                MSNUtils.LogError($"Error in API.GameStartDone: {e.Message}");
             }
         }
 
-        private static void GameShutdown()
+        private void GameShutdown()
         {
-            Timers.TimerStop();
-            ModEventsDiscordBehaviour.GameShutdown();
-            PersistentContainer.Instance.Save();
+            try
+            {
+                Timers.TimerStop();
+                ModEventsDiscordBehaviour.GameShutdown();
+                PersistentContainer.Instance.Save();
+            }
+            catch (Exception e)
+            {
+                MSNUtils.LogError($"Error in API.GameShutdown: {e.Message}");
+            }
         }
 
-        private static void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
+        private void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
         {
             try
             {
@@ -130,28 +196,48 @@ namespace MSNTools
             }
             catch (Exception e)
             {
-                Log.Out($"{Config.ModPrefix} Error in API.PlayerSpawnedInWorld: {e.Message}");
+                MSNUtils.LogError($"Error in API.PlayerSpawnedInWorld: {e.Message}");
             }
         }
 
-        private static void PlayerDisconnected(ClientInfo _cInfo, bool _bShutdown)
+        private void PlayerDisconnected(ClientInfo _cInfo, bool _bShutdown)
         {
-            if (!_bShutdown)
-                ModEventsDiscordBehaviour.PlayerDisconnected(_cInfo);
-        }
-
-        private static bool ChatMessage(ClientInfo _cInfo, EChatType _type, int _senderId, string _msg, string _mainName, bool _localizeMain, List<int> _recipientEntityIds)
-        {
-            if (_senderId == -1)
-                return true;
-            if (_msg.StartsWith(ChatCommandsHook.ChatCommandsPrefix) && ChatCommandsHook.ChatCommandsEnabled)
+            try
             {
-                ChatCommandsHook.Exec(_cInfo, _msg);
-                return false;
+                if (!_bShutdown)
+                    ModEventsDiscordBehaviour.PlayerDisconnected(_cInfo);
             }
-            else
-                ModEventsDiscordBehaviour.ChatMessage(_cInfo, _type, _msg);
-            return true;
+            catch (Exception e)
+            {
+                MSNUtils.LogError($"Error in API.PlayerDisconnected: {e.Message}");
+                throw;
+            }
+        }
+
+        private bool ChatMessage(ClientInfo _cInfo, EChatType _type, int _senderId, string _msg, string _mainName, bool _localizeMain, List<int> _recipientEntityIds)
+        {
+            try
+            {
+                if (_senderId == -1)
+                    return true;
+
+                if (ChatCommandTPToServerLocations.Exec(_cInfo, _msg))
+                    return false;
+                
+                if (_msg.StartsWith(ChatCommandsHook.ChatCommandsPrefix) && ChatCommandsHook.ChatCommandsEnabled)
+                {
+                    ChatCommandsHook.Exec(_cInfo, _msg);
+                    return false;
+                }
+                else
+                    ModEventsDiscordBehaviour.ChatMessage(_cInfo, _type, _msg);
+                return true;
+            }
+            catch (Exception e)
+            {
+                MSNUtils.LogError($"Error in API.ChatMessage: {e.Message}");
+            }
+            return false;
         }
     }
 }

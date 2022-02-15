@@ -1,22 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
+using MSNTools;
 
 public static class MSNLocalization
 {
     public static Dictionary<string, string> frenchLocalizations;
     public static Dictionary<string, string> englishLocalizations;
 
-    public static void Init()
-    {
-        LoadXML();
-    }
+    public static void Init() => LoadXML();
 
     private static void LoadXML()
     {
         frenchLocalizations = new Dictionary<string, string>();
         englishLocalizations = new Dictionary<string, string>();
         XmlDocument xmlDocument = new XmlDocument();
-        xmlDocument.Load(ModManager.GetMod("MSNTools").Path + "/MSNLocalizations.xml");
+        xmlDocument.Load(API.Mod.Path + "/MSNLocalizations.xml");
 
         foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes)
         {

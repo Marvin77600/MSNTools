@@ -79,7 +79,7 @@ namespace MSNTools.Harmony
             }
             catch (Exception e)
             {
-                Log.Out($"{Config.ModPrefix} Error in PatchAddWebhookConsoleCmdBan.Function: {e.Message}");
+                MSNUtils.LogError($"Error in PatchAddWebhookConsoleCmdBan.Function: {e.Message}");
             }
         }
     }

@@ -17,6 +17,17 @@ namespace MSNTools
             return null;
         }
 
+        public static PlayerDataFile GetPlayerDataFileFromUId(PlatformUserIdentifierAbs _uId)
+        {
+            PlayerDataFile playerDatafile = new PlayerDataFile();
+            playerDatafile.Load(GameIO.GetPlayerDataDir(), _uId.CombinedString.Trim());
+            if (playerDatafile != null)
+            {
+                return playerDatafile;
+            }
+            return null;
+        }
+
         public static void ReturnBlock(ClientInfo _cInfo, string _blockName, int _quantity)
         {
             EntityPlayer player = GetEntityPlayer(_cInfo.entityId);
@@ -202,7 +213,7 @@ namespace MSNTools
             }
             catch (Exception e)
             {
-                Log.Out($"{Config.ModPrefix} Error in PersistentOperations.IsBloodmoon: {e.Message}");
+                MSNUtils.LogError($"Error in PersistentOperations.IsBloodmoon: {e.Message}");
             }
             return false;
         }

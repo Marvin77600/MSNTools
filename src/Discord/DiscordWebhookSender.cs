@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MSNTools.PersistentData;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -100,6 +101,39 @@ namespace MSNTools.Discord
             DiscordMessage msg = new DiscordMessage();
             msg.Content = message;
             wbh.Send(msg);
+        }
+
+        public static void SendPlayerData(PersistentPlayer persistentPlayer)
+        {
+            if (persistentPlayer != null)
+            {
+                string playerName = persistentPlayer.PlayerName;
+                DiscordWebhook wbh = new DiscordWebhook();
+                wbh.Url = GetWebHookUrl(EnumWebHookType.PlayerInfos);
+                DiscordMessage msg = new DiscordMessage();
+                StringBuilder stringBuilder = new StringBuilder();
+                foreach (var tpPosition in persistentPlayer.TPPositions)
+                {
+                    stringBuilder.Append($"• {tpPosition.Key} - {tpPosition.Value}\n");
+                }
+                stringBuilder.ToString().TrimEnd('\n');
+                msg.Embeds = new List<DiscordEmbed>();
+                msg.Embeds.Add(new DiscordEmbed()
+                {
+                    Title = $"Données du joueur {playerName}",
+                    Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
+                    Fields = new List<EmbedField>()
+                    {
+                        new EmbedField() { Name = "Steam ID", Value = persistentPlayer.platformIdentifierString.Substring(6), InLine = false },
+                        new EmbedField() { Name = "Langue", Value = persistentPlayer.Language.ToString(), InLine = false },
+                        new EmbedField() { Name = "Porte-feuille", Value = persistentPlayer.PlayerWallet.ToString(), InLine = false },
+                        new EmbedField() { Name = "Donateur", Value = persistentPlayer.IsDonator ? "Oui" : "Non", InLine = false },
+                        new EmbedField() { Name = "TP perso", Value = stringBuilder.ToString(), InLine = false },
+                    },
+                    Color = Color.grey
+                });
+                wbh.Send(msg);
+            }
         }
 
         public static void SendSanctionEmbedToWebHook(ClientInfo _cInfo, string title, string reason)

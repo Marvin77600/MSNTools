@@ -49,12 +49,11 @@ namespace MSNTools.ChatCommands
 
         void Client_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
-            JsonData jsonData = new JsonData();
-            jsonData = JsonMapper.ToObject(e.Result);
+            JsonData jsonData = JsonMapper.ToObject(e.Result);
             if (HasVoted(jsonData[2].ToString()))
             {
                 PersistentContainer.Instance.Players[clientInfo.PlatformId.ToString()].LastVote = utcNow;
-                PersistentContainer.Instance.Players[clientInfo.PlatformId.ToString()].PlayerWallet += GainPerVote;
+                Bank.GiveMoney(clientInfo, GainPerVote);
                 PersistentContainer.DataChange = true;
 
                 string response = MSNLocalization.Get("voteClaimed", language).Replace("{0}", GainPerVote.ToString()).Replace("{1}", Bank.DeviseName);
