@@ -27,7 +27,9 @@ namespace MSNTools
                 ModEvents.GameShutdown.RegisterHandler(GameShutdown);
                 ModEvents.GameAwake.RegisterHandler(GameAwake);
                 CustomModEvents.AwardKill.RegisterHandler(AwardKill);
-                //CustomModEvents.BlockChange.RegisterHandler(BlockChange);
+                CustomModEvents.BlockChange.RegisterHandler(BlockChange);
+                CustomModEvents.StartBloodMoon.RegisterHandler(StartBloodMoon);
+                CustomModEvents.EndBloodMoon.RegisterHandler(EndBloodMoon);
                 MSNUtils.Log($"Mod chargé");
                 var harmony = new HarmonyX(GetType().ToString());
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -72,6 +74,7 @@ namespace MSNTools
             try
             {
                 PersistentContainer.Instance.Load();
+                Config.Load();
                 MSNLocalization.Init();
                 ChatCommandsHook.RegisterChatCommands();
                 ResetRegions.Exec();
@@ -142,11 +145,39 @@ namespace MSNTools
             CheckChangeBlocks.Exec(_gameManager, _platformUserIdentifierAbs, _blockChangeInfos);
         }
 
+        private void StartBloodMoon()
+        {
+            try
+            {
+                if (BloodMoonAlerts.IsEnabled)
+                    DiscordWebhookSender.SendBloodMoonStart();
+            }
+            catch (Exception e)
+            {
+                MSNUtils.LogError($"Error in API.StartBloodMoon: {e.Message}");
+            }
+        }
+
+        private void EndBloodMoon()
+        {
+            try
+            {
+                if (BloodMoonAlerts.IsEnabled)
+                {
+                    DiscordWebhookSender.SendBloodMoonEnd();
+                    BloodMoonAlerts.AlertAlreadySent = false;
+                }
+            }
+            catch (Exception e)
+            {
+                MSNUtils.LogError($"Error in API.EndBloodMoon: {e.Message}");
+            }
+        }
+
         private void GameStartDone()
         {
             try
             {
-                Config.Load();
                 Timers.TimerStart();
                 ModEventsDiscordBehaviour.GameStartDone();
             }

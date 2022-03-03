@@ -1,4 +1,5 @@
-﻿using MSNTools.PersistentData;
+﻿using MSNTools.Discord;
+using MSNTools.PersistentData;
 using System;
 using System.Collections.Generic;
 
@@ -62,7 +63,7 @@ namespace MSNTools.ChatCommands
             }
         }
 
-        public static IChatCommand GetCommand(string _command, bool _alreadyTokenized = false)
+        private static IChatCommand GetCommand(string _command, bool _alreadyTokenized = false)
         {
             if (!_alreadyTokenized)
             {
@@ -92,6 +93,12 @@ namespace MSNTools.ChatCommands
                     }
                     try
                     {
+                        string str = $"{stringList[0]} ";
+                        foreach (string s in stringList.GetRange(1, stringList.Count - 1))
+                            str += s + " ";
+                        str.TrimEnd(' ');
+                        if (DiscordWebhookSender.ServerInfosEnabled)
+                            DiscordWebhookSender.SendChatCommand(_clientInfo, str);
                         command.Execute(stringList.GetRange(1, stringList.Count - 1), _clientInfo);
                     }
                     catch (Exception ex)

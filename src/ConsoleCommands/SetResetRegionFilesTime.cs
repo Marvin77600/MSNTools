@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MSNTools.ConsoleCommands
 {
-    internal class SetResetRegionFilesTime : ConsoleCmdAbstract
+    public class SetResetRegionFilesTime : MSNConsoleCmdAbstract
     {
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -37,6 +37,6 @@ namespace MSNTools.ConsoleCommands
 
         public override string[] GetCommands() => new string[] { "srrft" };
 
-        public override string GetDescription() => "srrft year month day hour minute ";
+        public override string GetDescription() => "srrft year month day hour minute";
     }
 }

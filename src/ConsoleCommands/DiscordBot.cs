@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MSNTools.ConsoleCommands
 {
-    public class CmdDiscordBot : ConsoleCmdAbstract
+    public class CmdDiscordBot : MSNConsoleCmdAbstract
     {
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

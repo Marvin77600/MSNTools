@@ -6,7 +6,7 @@ namespace MSNTools
 {
     class InventoryChecks
     {
-        public static bool IsEnabled, IsRunning, Invalid_Stack, Ban_Player, Check_Storage = false;
+        public static bool IsEnabled, Check_Storage = false;
         public static int Admin_Level = 1;
         public static List<string> Exceptions_Items = new List<string> { "noteDuke01", "qtest_nextTraderAdmin" };
 
@@ -95,7 +95,8 @@ namespace MSNTools
                                     TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)_tile;
                                     if (SecureLoot.GetOwner() == null)
                                         continue;
-                                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(SecureLoot.GetOwner()) > Admin_Level)
+                                    int _userPermissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(SecureLoot.GetOwner());
+                                    if (_userPermissionLevel > Admin_Level)
                                     {
                                         ItemStack[] _items = SecureLoot.items;
                                         List<ItemStack> unauthorizedItems = new List<ItemStack>();

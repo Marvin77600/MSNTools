@@ -1,4 +1,5 @@
-﻿using MSNTools.PersistentData;
+﻿using MSNTools.Discord;
+using MSNTools.PersistentData;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,6 +23,7 @@ namespace MSNTools
                     if (regions.Count > 0)
                     {
                         string regionDir = GameIO.GetSaveGameRegionDir();
+                        string saveDir = GameIO.GetSaveGameDir();
                         if (Directory.Exists(regionDir))
                         {
                             string[] files = Directory.GetFiles(regionDir, "*.7rg");
@@ -40,9 +42,13 @@ namespace MSNTools
                                         }
                                     }
                                 }
-                                PersistentContainer.Instance.TimeRegionFiles = new DateTime(nextResetRegionFilesTime.Year, nextResetRegionFilesTime.Month, nextResetRegionFilesTime.Day + Day);
+                                FileInfo fileInfo = new FileInfo(saveDir + "/decorations.7dt");
+                                if (fileInfo.Exists)
+                                    fileInfo.Delete();
+                                PersistentContainer.Instance.TimeRegionFiles = new DateTime(nextResetRegionFilesTime.Ticks).AddDays(Day);
                                 PersistentContainer.DataChange = true;
-                                MSNUtils.Log($"Next Reset Regions : {nextResetRegionFilesTime}");
+                                MSNUtils.Log($"Next Reset Regions : {PersistentContainer.Instance.TimeRegionFiles}");
+                                DiscordWebhookSender.SendResetRegionMessage();
                             }
                         }
                         else

@@ -17,7 +17,7 @@ namespace MSNTools.ChatCommands
                 {
                     int day = GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime());
                     int bloodMoonFrequency = GamePrefs.GetInt(EnumGamePrefs.BloodMoonFrequency);
-                    int modulo = day % GamePrefs.GetInt(EnumGamePrefs.BloodMoonFrequency);
+                    int modulo = day % bloodMoonFrequency;
 
                     MSNLocalization.Language language = PersistentContainer.Instance.Players[_clientInfo.PlatformId.ToString()].Language;
 

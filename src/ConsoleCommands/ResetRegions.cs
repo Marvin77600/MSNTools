@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MSNTools.ConsoleCommands
 {
-    public class CommandResetRegions : ConsoleCmdAbstract
+    public class CommandResetRegions : MSNConsoleCmdAbstract
     {
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -370,6 +370,10 @@ namespace MSNTools.ConsoleCommands
 
         public override string[] GetCommands() => new string[] { "rr", "resetregions" };
 
-        public override string GetDescription() => "...";
+        public override string GetDescription() => "Manage the reset regions list.";
+
+        public override string GetHelp() => GetDescription() + "\nUsage:\n   resetregions add <resetregions>\n" +
+            "   resetregions remove <resetregions>\n" +
+            "   resetregions list";
     }
 }

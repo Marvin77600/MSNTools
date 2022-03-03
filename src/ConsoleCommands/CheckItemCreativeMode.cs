@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MSNTools.ConsoleCommands
 {
-    public class CheckItemCreativeMode : ConsoleCmdAbstract
+    public class CheckItemCreativeMode : MSNConsoleCmdAbstract
     {
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -29,6 +29,8 @@ namespace MSNTools.ConsoleCommands
 
         public override string[] GetCommands() => new string[] { "checkitemcreativemode", "cicm" };
 
-        public override string GetDescription() => "...";
+        public override string GetDescription() => "Check the creative mode of an item.";
+
+        public override string GetHelp() => GetDescription() + "\nUsage:\n   checkitemcreativemode <itemname>";
     }
 }

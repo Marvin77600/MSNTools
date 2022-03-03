@@ -31,19 +31,15 @@ namespace MSNTools
                                 Block oldBlock = oldBlockValue.Block;
                                 if (newBlockInfo != null && newBlockInfo.bChangeBlockValue)//has new block value
                                 {
-                                    MSNUtils.Log("5");
                                     Block newBlock = newBlockInfo.blockValue.Block;
                                     if (oldBlockValue.type == BlockValue.Air.type)//old block was air
                                     {
                                         List<string> regionsReset = PersistentContainer.Instance.RegionsReset;
                                         PrefabInstance prefab = GameManager.Instance.World.GetPOIAtPosition(newBlockInfo.pos.ToVector3());
-                                        MSNUtils.Log("6");
                                         if (newBlock is BlockSleepingBag)//placed a sleeping bag
                                         {
-                                            MSNUtils.Log("Block is SleepingBag");
-                                            if (prefab != null)
+                                            if (prefab != null && prefab.prefab.HasQuestTag())
                                             {
-                                                MSNUtils.Log("Remove it");
                                                 GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
                                                 PersistentOperations.ReturnBlock(cInfo, newBlock.GetBlockName(), 1);
                                                 return false;
@@ -51,10 +47,8 @@ namespace MSNTools
                                         }
                                         else if (newBlock is BlockLandClaim)//placed a land claim
                                         {
-                                            MSNUtils.Log("Block is LandClaim");
-                                            if (prefab != null || regionsReset.Contains(Zones.GetRegionFile(player)))
+                                            if (prefab != null || Zones.IsInRegionReset(player))
                                             {
-                                                MSNUtils.Log("Remove it");
                                                 GameManager.Instance.World.SetBlockRPC(newBlockInfo.pos, BlockValue.Air);
                                                 PersistentOperations.ReturnBlock(cInfo, newBlock.GetBlockName(), 1);
                                                 return false;

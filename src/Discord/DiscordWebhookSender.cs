@@ -74,8 +74,8 @@ namespace MSNTools.Discord
 
     class DiscordWebhookSender
     {
-        public static bool ChatEnabled, SanctionsEnabled, ServerInfosEnabled, PlayerInfosEnabled, AlertsEnabled = false;
-        public static string ChatWebHookUrl, SanctionsWebHookUrl, ServerInfosWebHookUrl, PlayerInfosWebHookUrl, AlertsWekHookUrl, FooterImageUrl = string.Empty;
+        public static bool ChatEnabled, SanctionsEnabled, ServerInfosEnabled, PlayerInfosEnabled, AlertsEnabled, BloodMoonAlertsEnabled = false;
+        public static string ChatWebHookUrl, SanctionsWebHookUrl, ServerInfosWebHookUrl, PlayerInfosWebHookUrl, AlertsWekHookUrl, BloodMoonWebHookUrl, FooterImageUrl, BloodMoonAlertImageUrl = string.Empty;
         public static Color32 PlayerConnectedColor, PlayerDisconnectedColor, SanctionsColor, AlertsColor, ServerOnlineColor, ServerOfflineColor = Color.black;
 
         private static string GetWebHookUrl(EnumWebHookType webHookType)
@@ -91,9 +91,86 @@ namespace MSNTools.Discord
                 url = ServerInfosWebHookUrl;
             else if (webHookType.Equals(EnumWebHookType.Alerts))
                 url = AlertsWekHookUrl;
+            else if (webHookType.Equals(EnumWebHookType.BloodMoon))
+                url = BloodMoonWebHookUrl;
             return url;
         }
-        
+
+        public static void SendChatCommand(ClientInfo _cInfo, string cmd)
+        {
+            if (_cInfo != null && cmd != string.Empty)
+            {
+                string playerName = _cInfo.playerName;
+                DiscordWebhook wbh = new DiscordWebhook();
+                wbh.Url = GetWebHookUrl(EnumWebHookType.PlayerInfos);
+                DiscordMessage msg = new DiscordMessage();
+                msg.Embeds = new List<DiscordEmbed>();
+                msg.Embeds.Add(new DiscordEmbed()
+                {
+                    Title = $"{playerName} a exécuté la commande chat : {cmd}",
+                    Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
+                });
+                wbh.Send(msg);
+            }
+        }
+
+        public static void SendBloodMoonAlert()
+        {
+            DiscordWebhook wbh = new DiscordWebhook();
+            wbh.Url = GetWebHookUrl(EnumWebHookType.BloodMoon);
+            DiscordMessage msg = new DiscordMessage();
+            msg.Embeds = new List<DiscordEmbed>();
+            msg.Embeds.Add(new DiscordEmbed()
+            {
+                Title = $"Serveur {GamePrefs.GetString(EnumGamePrefs.ServerName)} : ☠️ 🩸 BLOODMOON DANS 15 min ! 🩸 ☠️",
+                Image = new EmbedMedia()
+                {
+                    Url = BloodMoonAlertImageUrl
+                },
+                Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
+                Color = Color.red
+            });
+            wbh.Send(msg);
+        }
+
+        public static void SendBloodMoonStart()
+        {
+            DiscordWebhook wbh = new DiscordWebhook();
+            wbh.Url = GetWebHookUrl(EnumWebHookType.BloodMoon);
+            DiscordMessage msg = new DiscordMessage();
+            msg.Embeds = new List<DiscordEmbed>();
+            msg.Embeds.Add(new DiscordEmbed()
+            {
+                Title = $"Serveur {GamePrefs.GetString(EnumGamePrefs.ServerName)} : ☠️ 🩸 LA BLOODMOON VIENT DE DÉMARRER, PLUS DE CONNEXIONS ! 🩸 ☠️",
+                Image = new EmbedMedia()
+                {
+                    Url = BloodMoonAlertImageUrl
+                },
+                Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
+                Color = Color.red
+            });
+            wbh.Send(msg);
+        }
+
+        public static void SendBloodMoonEnd()
+        {
+            DiscordWebhook wbh = new DiscordWebhook();
+            wbh.Url = GetWebHookUrl(EnumWebHookType.BloodMoon);
+            DiscordMessage msg = new DiscordMessage();
+            msg.Embeds = new List<DiscordEmbed>();
+            msg.Embeds.Add(new DiscordEmbed()
+            {
+                Title = $"Serveur {GamePrefs.GetString(EnumGamePrefs.ServerName)} : ☠️ 🩸 LA BLOODMOON VIENT DE FINIR ! 🩸 ☠️",
+                Image = new EmbedMedia()
+                {
+                    Url = BloodMoonAlertImageUrl
+                },
+                Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
+                Color = Color.red
+            });
+            wbh.Send(msg);
+        }
+
         public static void SendChatMessageToWebhook(EnumWebHookType webHookType, string message)
         {
             DiscordWebhook wbh = new DiscordWebhook();
@@ -134,6 +211,25 @@ namespace MSNTools.Discord
                 });
                 wbh.Send(msg);
             }
+        }
+
+        public static void SendResetRegionMessage()
+        {
+            DiscordWebhook wbh = new DiscordWebhook();
+            wbh.Url = GetWebHookUrl(EnumWebHookType.ServerInfos);
+            DiscordMessage msg = new DiscordMessage();
+            msg.Embeds = new List<DiscordEmbed>();
+            msg.Embeds.Add(new DiscordEmbed()
+            {
+                Title = $"Reset des regions effectué sur le serveur {GamePrefs.GetString(EnumGamePrefs.ServerName)}",
+                Fields = new List<EmbedField>()
+                {
+                    new EmbedField() { Name = "Prochain reset des regions", Value = $"{PersistentContainer.Instance.TimeRegionFiles.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")}", InLine = false }
+                },
+                Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
+                Color = Color.grey
+            });
+            wbh.Send(msg);
         }
 
         public static void SendSanctionEmbedToWebHook(ClientInfo _cInfo, string title, string reason)
@@ -178,9 +274,9 @@ namespace MSNTools.Discord
                 for (int i = 0; i < unauthorizedItems.Count; i++)
                 {
                     if (i != unauthorizedItems.Count - 1)
-                        stringBuilder.Append($"• {unauthorizedItems[i].itemValue.ItemClass.GetLocalizedItemName()}\n");
+                        stringBuilder.Append($"• {unauthorizedItems[i].itemValue.ItemClass.GetLocalizedItemName()} ({unauthorizedItems[i].itemValue.ItemClass.Name})\n");
                     if (i == unauthorizedItems.Count - 1)
-                        stringBuilder.Append($"• {unauthorizedItems[i].itemValue.ItemClass.GetLocalizedItemName()}");
+                        stringBuilder.Append($"• {unauthorizedItems[i].itemValue.ItemClass.GetLocalizedItemName()} ({unauthorizedItems[i].itemValue.ItemClass.Name})");
                 }
                 msg.Embeds = new List<DiscordEmbed>();
                 msg.Embeds.Add(new DiscordEmbed()
@@ -367,7 +463,8 @@ namespace MSNTools.Discord
             Chat,
             PlayerInfos,
             ServerInfos,
-            Alerts
+            Alerts,
+            BloodMoon
         }
     }
 }

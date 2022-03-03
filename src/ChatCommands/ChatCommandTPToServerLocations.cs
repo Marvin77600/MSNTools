@@ -1,4 +1,5 @@
-﻿using MSNTools.PersistentData;
+﻿using MSNTools.Discord;
+using MSNTools.PersistentData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,8 @@ namespace MSNTools.ChatCommands
                             if (Bank.HasEnoughMoney(clientInfo))
                             {
                                 SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"teleportplayer {entityPlayer.entityId} {string.Join(" ", location.Value)}", clientInfo);
+                                if (DiscordWebhookSender.ServerInfosEnabled)
+                                    DiscordWebhookSender.SendChatCommand(clientInfo, msg);
                                 PersistentContainer.Instance.Players[clientInfo.PlatformId.ToString()].PlayerWallet -= ChatCommandTP.TPCost;
                                 PersistentContainer.DataChange = true;
                                 return true;

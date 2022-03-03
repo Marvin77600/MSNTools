@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace MSNTools.ConsoleCommands
 {
-    public class ConsoleCmdDonator : ConsoleCmdAbstract
+    public class ConsoleCmdDonator : MSNConsoleCmdAbstract
     {
         public override int DefaultPermissionLevel => 0;
 
@@ -92,6 +92,10 @@ namespace MSNTools.ConsoleCommands
 
         public override string[] GetCommands() => new string[] { "donator" };
 
-        public override string GetDescription() => "...";
+        public override string GetDescription() => "Manage the donator role of a player.";
+
+        public override string GetHelp() => GetDescription() + "\nUsage:\n" +
+            "   donator add <entity id> <donation amount>\n" +
+            "   donator remove <entity id>";
     }
 }

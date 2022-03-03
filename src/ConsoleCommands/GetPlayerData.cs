@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MSNTools.ConsoleCommands
 {
-    public class GetPlayerData : ConsoleCmdAbstract
+    public class GetPlayerData : MSNConsoleCmdAbstract
     {
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -56,6 +56,8 @@ namespace MSNTools.ConsoleCommands
 
         public override string[] GetCommands() => new string[] { "getplayerdata", "gpd" };
 
-        public override string GetDescription() => "...";
+        public override string GetDescription() => "Display on Discord the data of the player.";
+
+        public override string GetHelp() => GetDescription() + "\nUsage:\n   getplayerdata <entity id>";
     }
 }

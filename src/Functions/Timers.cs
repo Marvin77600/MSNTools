@@ -55,6 +55,9 @@ namespace MSNTools
             if (PlayerInvulnerabilityAtTrader.IsEnabled)
                 PlayerInvulnerabilityAtTrader.Exec();
 
+            if (Discord.BloodMoonAlerts.IsEnabled)
+                Discord.BloodMoonAlerts.BloodMoonStartSoon();
+
             if (_twoSecondTick >= 2)
             {
                 _twoSecondTick = 0;

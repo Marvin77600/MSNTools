@@ -119,9 +119,11 @@
     <Compile Include="src\ChatCommands\ChatCommandVote.cs" />
     <Compile Include="src\ChatCommands\IChatCommand.cs" />
     <Compile Include="src\ChatCommands\ChatCommandTrou.cs" />
-    <Compile Include="src\ConsoleCommands\AddItemException.cs" />
+    <Compile Include="src\ConsoleCommands\ItemException.cs" />
     <Compile Include="src\ConsoleCommands\CheckItemCreativeMode.cs" />
     <Compile Include="src\ConsoleCommands\GetPlayerData.cs" />
+    <Compile Include="src\ConsoleCommands\MSNConsoleCmdAbstract.cs" />
+    <Compile Include="src\ConsoleCommands\MSNHelp.cs" />
     <Compile Include="src\ConsoleCommands\PlaceBlock.cs" />
     <Compile Include="src\ConsoleCommands\DiscordBot.cs" />
     <Compile Include="src\ConsoleCommands\Donator.cs" />
@@ -133,6 +135,8 @@
     <Compile Include="src\CustomModEvents\CustomEvents.cs" />
     <Compile Include="src\CustomModEvents\CustomModEvent.cs" />
     <Compile Include="src\CustomModEvents\CustomModEventAbs.cs" />
+    <Compile Include="src\Discord\BloodMoonAlerts.cs" />
+    <Compile Include="src\Harmony\PatchAIDirectorBloodMoonComponent.cs" />
     <Compile Include="src\Harmony\PatchChangeBlocks.cs" />
     <Compile Include="src\Harmony\PatchProcessDamageEntityAlive.cs" />
     <Compile Include="src\Functions\MSNLocalization.cs" />

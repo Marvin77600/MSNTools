@@ -9,7 +9,7 @@ using System.IO;
 
 namespace MSNTools.ConsoleCommands
 {
-    public class ItemException : ConsoleCmdAbstract
+    public class ItemException : MSNConsoleCmdAbstract
     {
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -156,8 +156,12 @@ namespace MSNTools.ConsoleCommands
             }
         }
 
-        public override string[] GetCommands() => new string[] { "additemexception", "aie" };
+        public override string[] GetCommands() => new string[] { "itemexception", "ie" };
 
-        public override string GetDescription() => "...";
+        public override string GetDescription() => "Manage the inventory exceptions list.";
+        
+        public override string GetHelp() => GetDescription() + "\nUsage:\n   itemexception add <itemname>\n" +
+            "   itemexception remove <itemname>\n" +
+            "   itemexception list";
     }
 }

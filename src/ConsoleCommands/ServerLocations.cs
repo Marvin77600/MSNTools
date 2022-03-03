@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MSNTools.ConsoleCommands
 {
-    internal class ServerLocations : ConsoleCmdAbstract
+    internal class ServerLocations : MSNConsoleCmdAbstract
     {
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -66,6 +66,11 @@ namespace MSNTools.ConsoleCommands
 
         public override string[] GetCommands() => new string[] { "serverlocations" };
 
-        public override string GetDescription() => "...";
+        public override string GetDescription() => "Manage the server locations tps list.";
+
+        public override string GetHelp() => GetDescription() + "\nUsage:\n" +
+            "   serverlocations add <location_name> <x y z>\n" +
+            "   serverlocations remove <location_name>\n" +
+            "   serverlocations list";
     }
 }

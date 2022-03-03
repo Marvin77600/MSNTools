@@ -4,3 +4,9 @@ packages
 .config
 .suo
 MSNTools.csproj.user
+/.vs/VSWorkspaceState.json
+/.vs/slnx.sqlite
+/.vs/ProjectSettings.json
+/.vs/MSNTools/project-colors.json
+/packages.config
+/app.config

@@ -35,7 +35,8 @@ namespace MSNTools
                     {"ModName", new List<string> { "Value" } },
                     {"Server_Response_Name", new List<string> { "Value" } },
                     {"Chat_Response_Color", new List<string> { "Value" } },
-                    {"Discord_Footer_Image_Url", new List<string> { "Value" } }
+                    {"Discord_Footer_Image_Url", new List<string> { "Value" } },
+                    {"BloodMoon_Alerts_Image_Url", new List<string> { "Value" } }
                 }
             },
             { "Tools", new Dictionary<string, List <string>>
@@ -43,6 +44,7 @@ namespace MSNTools
                     {"Alerts_Webhook", new List<string> { "Enable", "Webhook_Url", "Color" } },
                     {"Anti_Collapse", new List<string> { "Enable", "Min_Entities_Detected"} },
                     {"Bank", new List<string> { "Enable", "Gain_Every_Hours", "Donator_Gain_Every_Hours", "Hour", "Devise_Name", "Max"} },
+                    {"BloodMoon_Alerts_Webhook", new List<string> { "Enable", "Webhook_Url", "Hour"} },
                     {"Chat_Commands", new List<string> { "Enable", "Prefix"} },
                     {"Chat_Webhook", new List<string> { "Enable", "Webhook_Url" } },
                     {"Godmode_Detector", new List<string> { "Enable", "Admin_Level" } },
@@ -179,6 +181,10 @@ namespace MSNTools
                                     {
                                         DiscordWebhookSender.FooterImageUrl = attribute;
                                     }
+                                    else if (nameAttribute == "BloodMoon_Alerts_Image_Url")
+                                    {
+                                        DiscordWebhookSender.BloodMoonAlertImageUrl = attribute;
+                                    }
                                 }
                                 if (childNode.Name == "Tools")
                                 {
@@ -242,6 +248,23 @@ namespace MSNTools
                                             else if (paramName == "Max")
                                             {
                                                 if (!TryParseInt(attribute, out Bank.Max, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            break;
+                                        case "BloodMoon_Alerts_Webhook":
+                                            if (paramName == "Enable")
+                                            {
+                                                if (!TryParseBool(attribute, out BloodMoonAlerts.IsEnabled, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "Webhook_Url")
+                                            {
+                                                if (!TryParseUrl(attribute, out DiscordWebhookSender.BloodMoonWebHookUrl, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "Hour")
+                                            {
+                                                if (!TryParseInt(attribute, out BloodMoonAlerts.Hour, nameAttribute, paramName, subChild))
                                                     continue;
                                             }
                                             break;
@@ -482,11 +505,13 @@ namespace MSNTools
                 sw.WriteLine($"        <BaseConf Name=\"Server_Response_Name\" Value=\"{Server_Response_Name}\" />");
                 sw.WriteLine($"        <BaseConf Name=\"Chat_Response_Color\" Value=\"{Chat_Response_Color}\" />");
                 sw.WriteLine($"        <BaseConf Name=\"Discord_Footer_Image_Url\" Value=\"{DiscordWebhookSender.FooterImageUrl}\" />");
+                sw.WriteLine($"        <BaseConf Name=\"BloodMoon_Alerts_Image_Url\" Value=\"{DiscordWebhookSender.BloodMoonAlertImageUrl}\" />");
                 sw.WriteLine("    </BaseConfs>");
                 sw.WriteLine("    <Tools>");
                 sw.WriteLine($"        <Tool Name=\"Alerts_Webhook\" Enable=\"{DiscordWebhookSender.AlertsEnabled}\" Webhook_Url=\"{DiscordWebhookSender.AlertsWekHookUrl}\" Color=\"{DiscordWebhookSender.AlertsColor.r},{DiscordWebhookSender.AlertsColor.g},{DiscordWebhookSender.AlertsColor.b}\" />");
                 sw.WriteLine($"        <Tool Name=\"Anti_Collapse\" Enable=\"{AntiCollapse.IsEnabled}\" Min_Entities_Detected=\"{AntiCollapse.MinEntitiesDetected}\" />");
-                sw.WriteLine($"        <Tool Name=\"Bank\" Enable=\"{Bank.IsEnabled}\" Donator_Gain_Every_Hours=\"{Bank.DonatorGainEveryHours}\" Gain_Every_Hours=\"{Bank.GainEveryHours}\" Devise_Name=\"{Bank.DeviseName}\" Max=\"{Bank.Max}\" />");
+                sw.WriteLine($"        <Tool Name=\"Bank\" Enable=\"{Bank.IsEnabled}\" Hours=\"{Bank.Hours}\" Donator_Gain_Every_Hours=\"{Bank.DonatorGainEveryHours}\" Gain_Every_Hours=\"{Bank.GainEveryHours}\" Devise_Name=\"{Bank.DeviseName}\" Max=\"{Bank.Max}\" />");
+                sw.WriteLine($"        <Tool Name=\"BloodMoon_Alerts_Webhook\" Webhook_Url=\"{DiscordWebhookSender.BloodMoonWebHookUrl}\" Enable=\"{BloodMoonAlerts.IsEnabled}\" Hour=\"{BloodMoonAlerts.Hour}\" />");
                 sw.WriteLine($"        <Tool Name=\"Chat_Commands\" Enable=\"{ChatCommandsHook.ChatCommandsEnabled}\" Prefix=\"{ChatCommandsHook.ChatCommandsPrefix}\" />");
                 sw.WriteLine($"        <Tool Name=\"Chat_Webhook\" Enable=\"{DiscordWebhookSender.ChatEnabled}\" Webhook_Url=\"{DiscordWebhookSender.ChatWebHookUrl}\" />");
                 sw.WriteLine($"        <Tool Name=\"Godmode_Detector\" Enable=\"{PlayerChecks.GodEnabled}\" Admin_Level=\"{PlayerChecks.God_Admin_Level}\" />");
@@ -618,7 +643,7 @@ namespace MSNTools
         {
             if (value.Length != 0)
             {
-                string[] array = value.Split(new string[] { ",", " ,", ", " }, StringSplitOptions.RemoveEmptyEntries);
+                string[] array = value.Split(new string[] { ",", " ,", ", ", " , " }, StringSplitOptions.RemoveEmptyEntries);
                 List<string> list = new List<string>();
                 foreach (string item in array)
                 {

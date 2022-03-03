@@ -1,9 +1,10 @@
-﻿using System;
+﻿using MSNTools.ConsoleCommands;
+using System;
 using System.Collections.Generic;
 
-namespace MSNTools.Commands
+namespace MSNTools.ConsoleCommands
 {
-    class ConsoleCmdDespawnEntity : ConsoleCmdAbstract
+    class ConsoleCmdDespawnEntity : MSNConsoleCmdAbstract
     {
         public override int DefaultPermissionLevel => 0;
 
@@ -75,8 +76,8 @@ namespace MSNTools.Commands
 
         public override string[] GetCommands() => new string[] { "despawnentity", "despawn" };
 
-        public override string GetDescription() => "Despawn a given entity";
+        public override string GetHelp() => GetDescription() + "\nUsage:\n   despawn <entity id>\nCan be used to despawn any entity that can be despawed (zombies, vehicles, animals, drones).";
 
-        public override string GetHelp() => "Despawn a given entity.\nUsage:\n   1. despawn <entity id>\n1. can be used to despawn any entity that can be despawed (zombies, vehicles, animals).";
+        public override string GetDescription() => "Despawn a given entity.";
     }
 }

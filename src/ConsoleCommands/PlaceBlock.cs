@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System;
 
-namespace SPTools
+namespace MSNTools.ConsoleCommands
 {
-    public class PlaceBlocks : ConsoleCmdAbstract
+    public class PlaceBlocks : MSNConsoleCmdAbstract
     {
-        public override string GetHelp() => "Permer de placer un bloc à une coordonnée précise.";
+        public override string GetHelp() => GetDescription() + "\nUsage:\n   placeblock <x y z> <blockname>";
 
-        public override string GetDescription() => "Permer de placer un bloc à une coordonnée précise.\nUtilisation :\n    Exemple : placeblock 1000 50 1000 concreteBlock";
+        public override string GetDescription() => "Place a block at the given coordinate.";
 
         public override string[] GetCommands() => new string[] { "placeblock", "pb" };
 
