@@ -207,10 +207,10 @@ namespace MSNTools
             {
                 if (_cInfo != null && _cInfo.PlatformId != null)
                 {
-                    EntityPlayer player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                     if (_respawnReason.Equals(RespawnType.JoinMultiplayer))
                     {
                         ModEventsDiscordBehaviour.PlayerSpawnedInWorld(_cInfo);
+                        ChatCommandBuy.NotifSellerWhenConnected(_cInfo);
                         PersistentContainer.DataChange = true;
                     }
                     else if (_respawnReason.Equals(RespawnType.EnterMultiplayer))

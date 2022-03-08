@@ -6,6 +6,7 @@ using System.Xml;
 using System.Collections.Generic;
 using MSNTools.ChatCommands;
 using MSNTools.Discord;
+using MSNTools.PersistentData;
 using UnityEngine;
 
 namespace MSNTools
@@ -36,7 +37,8 @@ namespace MSNTools
                     {"Server_Response_Name", new List<string> { "Value" } },
                     {"Chat_Response_Color", new List<string> { "Value" } },
                     {"Discord_Footer_Image_Url", new List<string> { "Value" } },
-                    {"BloodMoon_Alerts_Image_Url", new List<string> { "Value" } }
+                    {"BloodMoon_Alerts_Image_Url", new List<string> { "Value" } },
+                    {"Server_Language", new List<string> { "Value" } }
                 }
             },
             { "Tools", new Dictionary<string, List <string>>
@@ -184,6 +186,11 @@ namespace MSNTools
                                     else if (nameAttribute == "BloodMoon_Alerts_Image_Url")
                                     {
                                         DiscordWebhookSender.BloodMoonAlertImageUrl = attribute;
+                                    }
+                                    else if (nameAttribute == "Server_Language")
+                                    {
+                                        PersistentContainer.Instance.ServerLanguage = TryParseLanguage(attribute);
+                                        PersistentContainer.DataChange = true;
                                     }
                                 }
                                 if (childNode.Name == "Tools")
@@ -506,6 +513,7 @@ namespace MSNTools
                 sw.WriteLine($"        <BaseConf Name=\"Chat_Response_Color\" Value=\"{Chat_Response_Color}\" />");
                 sw.WriteLine($"        <BaseConf Name=\"Discord_Footer_Image_Url\" Value=\"{DiscordWebhookSender.FooterImageUrl}\" />");
                 sw.WriteLine($"        <BaseConf Name=\"BloodMoon_Alerts_Image_Url\" Value=\"{DiscordWebhookSender.BloodMoonAlertImageUrl}\" />");
+                sw.WriteLine($"        <BaseConf Name=\"Server_Language\" Value=\"{PersistentContainer.Instance.ServerLanguage}\" />");
                 sw.WriteLine("    </BaseConfs>");
                 sw.WriteLine("    <Tools>");
                 sw.WriteLine($"        <Tool Name=\"Alerts_Webhook\" Enable=\"{DiscordWebhookSender.AlertsEnabled}\" Webhook_Url=\"{DiscordWebhookSender.AlertsWekHookUrl}\" Color=\"{DiscordWebhookSender.AlertsColor.r},{DiscordWebhookSender.AlertsColor.g},{DiscordWebhookSender.AlertsColor.b}\" />");
@@ -657,6 +665,25 @@ namespace MSNTools
                 result = new List<string>();
                 MSNUtils.LogWarning($"Ignoring {nameAttribute} entry in {ConfigFile} because of invalid string value for '{paramName}' attribute: {node.OuterXml}");
                 return false;
+            }
+        }
+
+        static MSNLocalization.Language TryParseLanguage(string value)
+        {
+            if (value.EqualsCaseInsensitive("french") || value.EqualsCaseInsensitive("english"))
+            {
+                if (value.EqualsCaseInsensitive("french"))
+                {
+                    return MSNLocalization.Language.French;
+                }
+                else
+                {
+                    return MSNLocalization.Language.English;
+                }
+            }
+            else
+            {
+                return MSNLocalization.Language.French;
             }
         }
 

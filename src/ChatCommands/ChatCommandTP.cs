@@ -49,7 +49,7 @@ namespace MSNTools.ChatCommands
                                         }
                                         else
                                         {
-                                            if (Bank.HasEnoughMoney(_clientInfo))
+                                            if (Bank.HasEnoughMoney(_clientInfo, TPCost))
                                             {
                                                 PersistentContainer.Instance.Players[_clientInfo.PlatformId.ToString()].PlayerWallet -= TPCost;
                                                 PersistentContainer.DataChange = true;
@@ -107,14 +107,14 @@ namespace MSNTools.ChatCommands
                                     {
                                         if (tpPositions.ContainsKey(_params[1]))
                                         {
-                                            string response = MSNLocalization.Get("sameTPPoint", language).Replace("{0}", _params[1]);
+                                            string response = MSNLocalization.Get("sameTPPoint", language, _params[1]);
                                             ChatCommandsHook.ChatMessage(_clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
                                             return;
                                         }
                                         else
                                         {
                                             tpPositions.Add(_params[1], playerPosition);
-                                            string response = MSNLocalization.Get("addTPPoint", language).Replace("{0}", _params[1]).Replace("{1}", playerPosition.ToString());
+                                            string response = MSNLocalization.Get("addTPPoint", language, _params[1], playerPosition);
                                             ChatCommandsHook.ChatMessage(_clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
                                             PersistentContainer.Instance.Players[_clientInfo.PlatformId.ToString()].TPPositions = tpPositions;
                                             PersistentContainer.DataChange = true;
@@ -145,14 +145,14 @@ namespace MSNTools.ChatCommands
                                     if (tpPositions.ContainsKey(_params[1]))
                                     {
                                         tpPositions.Remove(_params[1]);
-                                        string response = MSNLocalization.Get("removeTPPoint", language).Replace("{0}", _params[1]);
+                                        string response = MSNLocalization.Get("removeTPPoint", language, _params[1]);
                                         ChatCommandsHook.ChatMessage(_clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
                                         PersistentContainer.Instance.Players[_clientInfo.PlatformId.ToString()].TPPositions = tpPositions;
                                         PersistentContainer.DataChange = true;
                                     }
                                     else
                                     {
-                                        string response = MSNLocalization.Get("notTPPointFound", language).Replace("{0}", _params[1]);
+                                        string response = MSNLocalization.Get("notTPPointFound", language, _params[1]);
                                         ChatCommandsHook.ChatMessage(_clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
                                     }
                                 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MSNTools.Functions;
+using System;
 using System.Collections.Generic;
 
 namespace MSNTools.PersistentData

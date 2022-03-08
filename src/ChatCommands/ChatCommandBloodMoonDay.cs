@@ -35,7 +35,7 @@ namespace MSNTools.ChatCommands
                         }
                         else
                         {
-                            string response = MSNLocalization.Get("bloodMoonDay", language).Replace("{0}", (bloodMoonFrequency - modulo).ToString()).Replace("{1}", (day + bloodMoonFrequency - modulo).ToString());
+                            string response = MSNLocalization.Get("bloodMoonDay", language, bloodMoonFrequency - modulo, day + bloodMoonFrequency - modulo);
                             ChatCommandsHook.ChatMessage(_clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
                         }
                     }

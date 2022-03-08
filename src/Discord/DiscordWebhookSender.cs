@@ -8,10 +8,12 @@ namespace MSNTools.Discord
 {
     class ModEventsDiscordBehaviour
     {
+        private static MSNLocalization.Language ServerLanguage = PersistentContainer.Instance.ServerLanguage;
+
         public static void GameStartDone()
         {
             if (DiscordWebhookSender.ServerInfosEnabled)
-                DiscordWebhookSender.SendEmbedToWebHook(DiscordWebhookSender.EnumWebHookType.ServerInfos, DiscordWebhookSender.ServerOnlineColor, $"Serveur démarré !");
+                DiscordWebhookSender.SendEmbedToWebHook(DiscordWebhookSender.EnumWebHookType.ServerInfos, DiscordWebhookSender.ServerOnlineColor, MSNLocalization.Get("discordServerStarted", ServerLanguage));
             //if (DiscordWebhookSender.ChatEnabled)
                 //DiscordWebhookSender.SendChatMessageToWebhook(DiscordWebhookSender.EnumWebHookType.Chat, $"*Serveur démarré !*");
         }
@@ -19,7 +21,7 @@ namespace MSNTools.Discord
         public static void GameShutdown()
         {
             if (DiscordWebhookSender.ServerInfosEnabled)
-                DiscordWebhookSender.SendEmbedToWebHook(DiscordWebhookSender.EnumWebHookType.ServerInfos, DiscordWebhookSender.ServerOfflineColor, $"Serveur éteint !");
+                DiscordWebhookSender.SendEmbedToWebHook(DiscordWebhookSender.EnumWebHookType.ServerInfos, DiscordWebhookSender.ServerOfflineColor, MSNLocalization.Get("discordServerShutdown", ServerLanguage));
             //if (DiscordWebhookSender.ChatEnabled)
                 //DiscordWebhookSender.SendChatMessageToWebhook(DiscordWebhookSender.EnumWebHookType.Chat, $"*Serveur éteint !*");
         }
@@ -29,7 +31,7 @@ namespace MSNTools.Discord
             if (_cInfo != null)
             {
                 if (DiscordWebhookSender.PlayerInfosEnabled)
-                    DiscordWebhookSender.SendEmbedToWebHook(DiscordWebhookSender.EnumWebHookType.PlayerInfos, DiscordWebhookSender.PlayerConnectedColor, $"{_cInfo.playerName} vient de se connecter !");
+                    DiscordWebhookSender.SendEmbedToWebHook(DiscordWebhookSender.EnumWebHookType.PlayerInfos, DiscordWebhookSender.PlayerConnectedColor, MSNLocalization.Get("discordPlayerSpawnedInWorld", ServerLanguage, _cInfo.playerName));
                 //if (DiscordWebhookSender.ChatEnabled)
                 //DiscordWebhookSender.SendChatMessageToWebhook(DiscordWebhookSender.EnumWebHookType.Chat, $"*{_cInfo.playerName} vient de se connecter !*");
             }
@@ -40,7 +42,7 @@ namespace MSNTools.Discord
             if (_cInfo != null)
             {
                 if (DiscordWebhookSender.PlayerInfosEnabled)
-                    DiscordWebhookSender.SendEmbedToWebHook(DiscordWebhookSender.EnumWebHookType.PlayerInfos, DiscordWebhookSender.PlayerDisconnectedColor, $"{_cInfo.playerName} vient de se déconnecter !");
+                    DiscordWebhookSender.SendEmbedToWebHook(DiscordWebhookSender.EnumWebHookType.PlayerInfos, DiscordWebhookSender.PlayerDisconnectedColor, MSNLocalization.Get("discordPlayerDisconnected", ServerLanguage, _cInfo.playerName));
                 //if (DiscordWebhookSender.ChatEnabled)
                 //DiscordWebhookSender.SendChatMessageToWebhook(DiscordWebhookSender.EnumWebHookType.Chat, $"*{_cInfo.playerName} vient de se déconnecter !*");
             }
@@ -55,7 +57,7 @@ namespace MSNTools.Discord
                     if (_type.Equals(EChatType.Global))
                         DiscordWebhookSender.SendChatMessageToWebhook(DiscordWebhookSender.EnumWebHookType.Chat, $"[Global] **{_cInfo.playerName}** : {_msg}");
                     else if (_type.Equals(EChatType.Friends))
-                        DiscordWebhookSender.SendChatMessageToWebhook(DiscordWebhookSender.EnumWebHookType.Chat, $"[Amis] **{_cInfo.playerName}** : {_msg}");
+                        DiscordWebhookSender.SendChatMessageToWebhook(DiscordWebhookSender.EnumWebHookType.Chat, $"[{MSNLocalization.Get("discordFriends", ServerLanguage)}] **{_cInfo.playerName}** : {_msg}");
                     else if (_type.Equals(EChatType.Party))
                     {
                         StringBuilder stringBuilder = new StringBuilder();
@@ -65,7 +67,7 @@ namespace MSNTools.Discord
                             stringBuilder.Append($"*{member.EntityName}*, ");
 
                         string members = stringBuilder.ToString().TrimEnd(',', ' ');
-                        DiscordWebhookSender.SendChatMessageToWebhook(DiscordWebhookSender.EnumWebHookType.Chat, $"[Groupe] (Membres du groupe : {members})\n**{_cInfo.playerName}** : {_msg}");
+                        DiscordWebhookSender.SendChatMessageToWebhook(DiscordWebhookSender.EnumWebHookType.Chat, MSNLocalization.Get("discordParty", ServerLanguage, members, _cInfo.playerName, _msg));
                     }
                 }
             }
@@ -74,6 +76,8 @@ namespace MSNTools.Discord
 
     class DiscordWebhookSender
     {
+        private static MSNLocalization.Language ServerLanguage = PersistentContainer.Instance.ServerLanguage;
+
         public static bool ChatEnabled, SanctionsEnabled, ServerInfosEnabled, PlayerInfosEnabled, AlertsEnabled, BloodMoonAlertsEnabled = false;
         public static string ChatWebHookUrl, SanctionsWebHookUrl, ServerInfosWebHookUrl, PlayerInfosWebHookUrl, AlertsWekHookUrl, BloodMoonWebHookUrl, FooterImageUrl, BloodMoonAlertImageUrl = string.Empty;
         public static Color32 PlayerConnectedColor, PlayerDisconnectedColor, SanctionsColor, AlertsColor, ServerOnlineColor, ServerOfflineColor = Color.black;
@@ -107,7 +111,7 @@ namespace MSNTools.Discord
                 msg.Embeds = new List<DiscordEmbed>();
                 msg.Embeds.Add(new DiscordEmbed()
                 {
-                    Title = $"{playerName} a exécuté la commande chat : {cmd}",
+                    Title = MSNLocalization.Get("discordSendChatCommandTitle", ServerLanguage, playerName, cmd),
                     Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
                 });
                 wbh.Send(msg);
@@ -122,7 +126,7 @@ namespace MSNTools.Discord
             msg.Embeds = new List<DiscordEmbed>();
             msg.Embeds.Add(new DiscordEmbed()
             {
-                Title = $"Serveur {GamePrefs.GetString(EnumGamePrefs.ServerName)} : ☠️ 🩸 BLOODMOON DANS 15 min ! 🩸 ☠️",
+                Title = MSNLocalization.Get("discordSendBloodMoonAlert", ServerLanguage, GamePrefs.GetString(EnumGamePrefs.ServerName)),
                 Image = new EmbedMedia()
                 {
                     Url = BloodMoonAlertImageUrl
@@ -141,7 +145,7 @@ namespace MSNTools.Discord
             msg.Embeds = new List<DiscordEmbed>();
             msg.Embeds.Add(new DiscordEmbed()
             {
-                Title = $"Serveur {GamePrefs.GetString(EnumGamePrefs.ServerName)} : ☠️ 🩸 LA BLOODMOON VIENT DE DÉMARRER, PLUS DE CONNEXIONS ! 🩸 ☠️",
+                Title = MSNLocalization.Get("discordSendBloodMoonStart", ServerLanguage, GamePrefs.GetString(EnumGamePrefs.ServerName)),
                 Image = new EmbedMedia()
                 {
                     Url = BloodMoonAlertImageUrl
@@ -160,7 +164,7 @@ namespace MSNTools.Discord
             msg.Embeds = new List<DiscordEmbed>();
             msg.Embeds.Add(new DiscordEmbed()
             {
-                Title = $"Serveur {GamePrefs.GetString(EnumGamePrefs.ServerName)} : ☠️ 🩸 LA BLOODMOON VIENT DE FINIR ! 🩸 ☠️",
+                Title = MSNLocalization.Get("discordSendBloodMoonEnd", ServerLanguage, GamePrefs.GetString(EnumGamePrefs.ServerName)),
                 Image = new EmbedMedia()
                 {
                     Url = BloodMoonAlertImageUrl
@@ -202,9 +206,9 @@ namespace MSNTools.Discord
                     Fields = new List<EmbedField>()
                     {
                         new EmbedField() { Name = "Steam ID", Value = persistentPlayer.platformIdentifierString.Substring(6), InLine = false },
-                        new EmbedField() { Name = "Langue", Value = persistentPlayer.Language.ToString(), InLine = false },
-                        new EmbedField() { Name = "Porte-feuille", Value = persistentPlayer.PlayerWallet.ToString(), InLine = false },
-                        new EmbedField() { Name = "Donateur", Value = persistentPlayer.IsDonator ? "Oui" : "Non", InLine = false },
+                        new EmbedField() { Name = MSNLocalization.Get("languageKey", ServerLanguage), Value = persistentPlayer.Language.ToString(), InLine = false },
+                        new EmbedField() { Name = MSNLocalization.Get("walletKey", ServerLanguage), Value = persistentPlayer.PlayerWallet.ToString(), InLine = false },
+                        new EmbedField() { Name = MSNLocalization.Get("donatorKey", ServerLanguage), Value = persistentPlayer.IsDonator ? MSNLocalization.Get("yesKey", ServerLanguage) : MSNLocalization.Get("noKey", ServerLanguage), InLine = false },
                         new EmbedField() { Name = "TP perso", Value = stringBuilder.ToString(), InLine = false },
                     },
                     Color = Color.grey
@@ -221,10 +225,10 @@ namespace MSNTools.Discord
             msg.Embeds = new List<DiscordEmbed>();
             msg.Embeds.Add(new DiscordEmbed()
             {
-                Title = $"Reset des regions effectué sur le serveur {GamePrefs.GetString(EnumGamePrefs.ServerName)}",
+                Title = MSNLocalization.Get("discordResetRegionMessageTitle", ServerLanguage, GamePrefs.GetString(EnumGamePrefs.ServerName)),
                 Fields = new List<EmbedField>()
                 {
-                    new EmbedField() { Name = "Prochain reset des regions", Value = $"{PersistentContainer.Instance.TimeRegionFiles.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")}", InLine = false }
+                    new EmbedField() { Name = MSNLocalization.Get("discordResetRegionNext", ServerLanguage), Value = $"{PersistentContainer.Instance.TimeRegionFiles.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")}", InLine = false }
                 },
                 Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
                 Color = Color.grey
@@ -249,10 +253,10 @@ namespace MSNTools.Discord
                     Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
                     Fields = new List<EmbedField>()
                     {
-                        new EmbedField() { Name = "Nom du joueur", Value = playerName, InLine = true },
+                        new EmbedField() { Name = MSNLocalization.Get("playerNameKey", ServerLanguage), Value = playerName, InLine = true },
                         new EmbedField() { Name = "Steam ID", Value = steamID, InLine = true },
                         new EmbedField() { Name = "EOS ID", Value = eosID, InLine = true },
-                        new EmbedField() { Name = "Raison", Value = reason, InLine = false }
+                        new EmbedField() { Name = MSNLocalization.Get("reasonKey", ServerLanguage), Value = reason, InLine = false }
                     },
                     Color = SanctionsColor
                 });
@@ -285,11 +289,11 @@ namespace MSNTools.Discord
                     Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
                     Fields = new List<EmbedField>()
                     {
-                        new EmbedField() { Name = "Nom du joueur", Value = playerName, InLine = true },
+                        new EmbedField() { Name = MSNLocalization.Get("playerNameKey", ServerLanguage), Value = playerName, InLine = true },
                         new EmbedField() { Name = "Steam ID", Value = steamID, InLine = true },
                         new EmbedField() { Name = "EOS ID", Value = eosID, InLine = true },
-                        new EmbedField() { Name = "Raison", Value = reason, InLine = false },
-                        new EmbedField() { Name = unauthorizedItems.Count == 1 ? "Item trouvé" : $"{unauthorizedItems.Count} items trouvés", Value = stringBuilder.ToString(), InLine = false },
+                        new EmbedField() { Name = MSNLocalization.Get("reasonKey", ServerLanguage), Value = reason, InLine = false },
+                        new EmbedField() { Name = unauthorizedItems.Count == 1 ? MSNLocalization.Get("itemFoundKey", ServerLanguage) : MSNLocalization.Get("itemsFoundKey", ServerLanguage, unauthorizedItems.Count), Value = stringBuilder.ToString(), InLine = false },
                     },
                     Color = SanctionsColor
                 });
@@ -314,10 +318,10 @@ namespace MSNTools.Discord
                     Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
                     Fields = new List<EmbedField>()
                     {
-                        new EmbedField() { Name = "Nom du joueur", Value = playerName, InLine = true },
+                        new EmbedField() { Name = MSNLocalization.Get("playerNameKey", ServerLanguage), Value = playerName, InLine = true },
                         new EmbedField() { Name = "Steam ID", Value = steamID, InLine = true },
                         new EmbedField() { Name = "EOS ID", Value = eosID, InLine = true },
-                        new EmbedField() { Name = "Raison", Value = reason, InLine = false },
+                        new EmbedField() { Name = MSNLocalization.Get("reasonKey", ServerLanguage), Value = reason, InLine = false },
                         new EmbedField() { Name = "Position", Value = $"{playerPos}\n", InLine = false }
                     },
                     Color = SanctionsColor
@@ -350,15 +354,15 @@ namespace MSNTools.Discord
                 }
                 msg.Embeds.Add(new DiscordEmbed()
                 {
-                    Title = $"Alerte items interdits dans {container.Block.GetLocalizedBlockName()}",
+                    Title = MSNLocalization.Get("discordSendAlertTitle", ServerLanguage, container.Block.GetLocalizedBlockName()),
                     Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
                     Fields = new List<EmbedField>()
                     {
-                        new EmbedField() { Name = "Nom du propriétaire", Value = playerName, InLine = true },
+                        new EmbedField() { Name = MSNLocalization.Get("ownerNameKey", ServerLanguage), Value = playerName, InLine = true },
                         new EmbedField() { Name = "Steam ID", Value = steamID, InLine = true },
                         new EmbedField() { Name = "EOS ID", Value = eosID, InLine = true },
-                        new EmbedField() { Name = unauthorizedItems.Count == 1 ? "Item trouvé" : $"{unauthorizedItems.Count} items trouvés", Value = stringBuilder.ToString(), InLine = false },
-                        new EmbedField() { Name = "Position du conteneur", Value = $"{containerPos}", InLine = false }
+                        new EmbedField() { Name = unauthorizedItems.Count == 1 ? MSNLocalization.Get("itemFoundKey", ServerLanguage) : MSNLocalization.Get("itemsFoundKey", ServerLanguage, unauthorizedItems.Count), Value = stringBuilder.ToString(), InLine = false },
+                        new EmbedField() { Name = MSNLocalization.Get("containerPositionKey", ServerLanguage), Value = $"{containerPos}", InLine = false }
                     },
                     Color = AlertsColor
                 });
@@ -376,7 +380,7 @@ namespace MSNTools.Discord
             {
                 msg.Embeds.Add(new DiscordEmbed()
                 {
-                    Title = $"Alerte effondrement aux coordonnées {pos}",
+                    Title = MSNLocalization.Get("collapseStartedKey", ServerLanguage, pos),
                     Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
                     Color = AlertsColor
                 });
@@ -396,10 +400,10 @@ namespace MSNTools.Discord
 
                 msg.Embeds.Add(new DiscordEmbed()
                 {
-                    Title = $"Alerte effondrement aux coordonnées {pos}",
+                    Title = MSNLocalization.Get("collapseStartedKey", ServerLanguage, pos),
                     Fields = new List<EmbedField>()
                     {
-                        new EmbedField() { Name = playersNearCollapse.Count == 1 ? "Joueur à proximité" : "Joueurs à proximité", Value = stringBuilder.ToString(), InLine = false }
+                        new EmbedField() { Name = playersNearCollapse.Count == 1 ? MSNLocalization.Get("playerNearKey", ServerLanguage) : MSNLocalization.Get("playersNearKey", ServerLanguage), Value = stringBuilder.ToString(), InLine = false }
                     },
                     Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
                     Color = AlertsColor
@@ -416,26 +420,7 @@ namespace MSNTools.Discord
             msg.Embeds = new List<DiscordEmbed>();
             msg.Embeds.Add(new DiscordEmbed()
             {
-                Title = $"Effondrement terminé, un total de {fallingBlocksCount} entités de blocs ont été supprimés",
-                Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
-                Color = AlertsColor
-            });
-            wbh.Send(msg);
-        }
-
-        public static void SendAlertFinishCollapseWithClosestPlayerEmbedToWebHook(int fallingBlocksCount, ClientInfo cInfo)
-        {
-            DiscordWebhook wbh = new DiscordWebhook();
-            wbh.Url = GetWebHookUrl(EnumWebHookType.Alerts);
-            DiscordMessage msg = new DiscordMessage();
-            msg.Embeds = new List<DiscordEmbed>();
-            msg.Embeds.Add(new DiscordEmbed()
-            {
-                Title = $"Effondrement terminé, un total de {fallingBlocksCount} entités de blocs ont été supprimés",
-                Fields = new List<EmbedField> 
-                {
-                    new EmbedField() {  Name = "Joueur le plus proche", Value = $"{cInfo.playerName}", InLine = true }
-                },
+                Title = MSNLocalization.Get("collapseFinishKey", ServerLanguage, fallingBlocksCount),
                 Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
                 Color = AlertsColor
             });

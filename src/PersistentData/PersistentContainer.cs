@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MSNTools.Functions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -9,15 +10,18 @@ namespace MSNTools.PersistentData
     public class PersistentContainer
     {
         public static bool DataChange = false;
+        public MSNLocalization.Language ServerLanguage;
+        private int? nextSellID;
 
         private static string filepath = string.Format("{0}/MSNTools.bin", Config.ConfigPath);
         private static PersistentContainer instance;
         private PersistentPlayers players;
-        private static bool Saving = false;
+        private bool Saving = false;
         private List<string> protectedZones;
         private List<string> regionReset;
         private DateTime timeResetRegionFiles;
         private Dictionary<string, string[]> serverLocations;
+        private List<ShopStructure> shopList;
 
         public static PersistentContainer Instance
         {
@@ -162,6 +166,38 @@ namespace MSNTools.PersistentData
             set
             {
                 regionReset = value;
+            }
+        }
+
+        public List<ShopStructure> ShopList
+        {
+            get
+            {
+                if (shopList == null)
+                {
+                    shopList = new List<ShopStructure>();
+                }
+                return shopList;
+            }
+            set
+            {
+                shopList = value;
+            }
+        }
+
+        public int NextSellID
+        {
+            get
+            {
+                if (nextSellID == null)
+                {
+                    nextSellID = 0;
+                }
+                return (int)nextSellID;
+            }
+            set
+            {
+                nextSellID = value;
             }
         }
     }

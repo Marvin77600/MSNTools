@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace MSNTools
 {
-    class PersistentOperations
+    public class PersistentOperations
     {
         public static List<ClientInfo> ClientList()
         {

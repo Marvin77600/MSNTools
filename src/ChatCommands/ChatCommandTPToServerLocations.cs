@@ -22,7 +22,7 @@ namespace MSNTools.ChatCommands
                     {
                         if (msg.Contains(location.Key))
                         {
-                            if (Bank.HasEnoughMoney(clientInfo))
+                            if (Bank.HasEnoughMoney(clientInfo, ChatCommandTP.TPCost))
                             {
                                 SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"teleportplayer {entityPlayer.entityId} {string.Join(" ", location.Value)}", clientInfo);
                                 if (DiscordWebhookSender.ServerInfosEnabled)

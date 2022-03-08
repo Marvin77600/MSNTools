@@ -15,7 +15,7 @@ namespace MSNTools.ChatCommands
                     MSNLocalization.Language language = PersistentContainer.Instance.Players[_clientInfo.PlatformId.ToString()].Language;
                     if (!(_params[0] == "french" || _params[0] == "english"))
                     {
-                        string response = MSNLocalization.Get("badlanguage", language).Replace("{0}", _params[0]);
+                        string response = MSNLocalization.Get("badlanguage", language, _params[0]);
                         ChatCommandsHook.ChatMessage(_clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
                     }
                     else
@@ -23,7 +23,7 @@ namespace MSNTools.ChatCommands
                         language = StringToLanguageEnum(_params[0]);
                         PersistentContainer.Instance.Players[_clientInfo.PlatformId.ToString()].Language = StringToLanguageEnum(_params[0]);
                         PersistentContainer.DataChange = true;
-                        string response = MSNLocalization.Get("newLanguage", language).Replace("{0}", _params[0]);
+                        string response = MSNLocalization.Get("newLanguage", language, _params[0]);
                         ChatCommandsHook.ChatMessage(_clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
                     }
                 }

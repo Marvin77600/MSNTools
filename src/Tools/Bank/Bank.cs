@@ -69,6 +69,34 @@ namespace MSNTools
             }
         }
 
+        public static int CanTakeMoney(ClientInfo clientInfo, int value)
+        {
+            try
+            {
+                if (clientInfo != null)
+                {
+                    PersistentPlayer persistentPlayer = PersistentContainer.Instance.Players[clientInfo.PlatformId.ToString()];
+                    int playerWallet = persistentPlayer.PlayerWallet;
+                    if (Max - playerWallet < value)
+                    {
+                        MSNUtils.LogWarning($"CanTakeMoney() Max - playerWallet");
+                        return Max - playerWallet;
+                    }
+                    else
+                    {
+                        MSNUtils.LogWarning($"CanTakeMoney() value");
+                        return value;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MSNUtils.LogError($"Error in Bank.CanTakeMoney: {e.Message}");
+            }
+            MSNUtils.LogWarning($"CanTakeMoney() 0");
+            return 0;
+        }
+
         public static void FixedMaxMoney()
         {
             try
@@ -92,10 +120,10 @@ namespace MSNTools
             }
         }
 
-        public static bool HasEnoughMoney(ClientInfo clientInfo)
+        public static bool HasEnoughMoney(ClientInfo clientInfo, int value)
         {
             MSNLocalization.Language language = PersistentContainer.Instance.Players[clientInfo.PlatformId.ToString()].Language;
-            if (PersistentContainer.Instance.Players[clientInfo.PlatformId.ToString()].PlayerWallet >= ChatCommandTP.TPCost)
+            if (PersistentContainer.Instance.Players[clientInfo.PlatformId.ToString()].PlayerWallet >= value)
                 return true;
             else
             {

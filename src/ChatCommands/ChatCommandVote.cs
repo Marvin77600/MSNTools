@@ -56,7 +56,7 @@ namespace MSNTools.ChatCommands
                 Bank.GiveMoney(clientInfo, GainPerVote);
                 PersistentContainer.DataChange = true;
 
-                string response = MSNLocalization.Get("voteClaimed", language).Replace("{0}", GainPerVote.ToString()).Replace("{1}", Bank.DeviseName);
+                string response = MSNLocalization.Get("voteClaimed", language, GainPerVote, Bank.DeviseName);
                 ChatCommandsHook.ChatMessage(clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
             }
             else

@@ -42,6 +42,34 @@ public static class MSNLocalization
         return key;
     }
 
+    public static string Get(string key, Language language, params object[] parameters)
+    {
+        int i = parameters.Length;
+        if (language == Language.French)
+        {
+            if (frenchLocalizations.TryGetValue(key, out string french))
+            {
+                for (int index = 0; index < i; index++)
+                {
+                    french = french.Replace("{" + index + "}", parameters[index].ToString());
+                }
+                return french;
+            }
+        }
+        if (language == Language.English)
+        {
+            if (englishLocalizations.TryGetValue(key, out string english))
+            {
+                for (int index = 0; index < i; index++)
+                {
+                    english = english.Replace("{" + index + "}", parameters[index].ToString());
+                }
+                return english;
+            }
+        }
+        return key;
+    }
+
     public enum Language
     {
         French,
