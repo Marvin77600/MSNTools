@@ -14,6 +14,8 @@ namespace MSNTools.ChatCommands
         {
             try
             {
+                if (!ChatCommandShop.IsEnabled)
+                    return;
                 if (_clientInfo != null)
                 {
                     if (_params.Count == 1)

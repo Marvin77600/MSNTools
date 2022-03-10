@@ -8,10 +8,14 @@ namespace MSNTools.ChatCommands
 {
     public class ChatCommandShop : ChatCommandAbstract
     {
+        public static bool IsEnabled = false;
+
         public override void Execute(List<string> _params, ClientInfo _clientInfo)
         {
             try
             {
+                if (!IsEnabled)
+                    return;
                 if (_clientInfo != null)
                 {
                     MSNLocalization.Language language = PersistentContainer.Instance.Players[_clientInfo.PlatformId.ToString()].Language;

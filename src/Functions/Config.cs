@@ -57,6 +57,7 @@ namespace MSNTools
                     {"Reset_Regions", new List<string> { "Enable", "Day", "Hour", "Buff_Reset_Zones" } },
                     {"Sanctions_Webhook", new List<string> { "Enable", "Webhook_Url", "Color" } },
                     {"Server_Infos_Webhook", new List<string> { "Enable", "Webhook_Url", "Connected_Color", "Disconnected_Color" } },
+                    {"Shop", new List<string> { "Enable" } },
                     {"Spectator_Detector", new List<string> { "Enable", "Admin_Level" } },
                     {"TP_Command", new List<string> { "Enable", "TP_Cost", "TP_Max_Count" } },
                     {"Vote_Command", new List<string>{ "Enable", "Gain_Per_Vote", "API_Server_Token" } }
@@ -440,6 +441,13 @@ namespace MSNTools
                                                     continue;
                                             }
                                             break;
+                                        case "Shop":
+                                            if (paramName == "Enable")
+                                            {
+                                                if (!TryParseBool(attribute, out ChatCommandShop.IsEnabled, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            break;
                                         case "Spectator_Detector":
                                             if (paramName == "Enable")
                                             {
@@ -530,6 +538,7 @@ namespace MSNTools
                 sw.WriteLine($"        <Tool Name=\"Reset_Regions\" Enable=\"{ResetRegions.IsEnabled}\" Day=\"{ResetRegions.Day}\" Hour=\"{ResetRegions.Hour}\" Buff_Reset_Zones=\"{Zones.BuffResetZone}\" />");
                 sw.WriteLine($"        <Tool Name=\"Server_Infos_Webhook\" Enable=\"{DiscordWebhookSender.ServerInfosEnabled}\" Webhook_Url=\"{DiscordWebhookSender.ServerInfosWebHookUrl}\" Connected_Color=\"{DiscordWebhookSender.ServerOnlineColor.r},{DiscordWebhookSender.ServerOnlineColor.g},{DiscordWebhookSender.ServerOnlineColor.b}\" Disconnected_Color=\"{DiscordWebhookSender.ServerOfflineColor.r},{DiscordWebhookSender.ServerOfflineColor.g},{DiscordWebhookSender.ServerOfflineColor.b}\" />");
                 sw.WriteLine($"        <Tool Name=\"Sanctions_Webhook\" Enable=\"{DiscordWebhookSender.SanctionsEnabled}\" Webhook_Url=\"{DiscordWebhookSender.SanctionsWebHookUrl}\" Color=\"{DiscordWebhookSender.SanctionsColor.r},{DiscordWebhookSender.SanctionsColor.g},{DiscordWebhookSender.SanctionsColor.b}\"/>");
+                sw.WriteLine($"        <Tool Name=\"Shop\" Enable=\"{ChatCommandShop.IsEnabled}\"/>");
                 sw.WriteLine($"        <Tool Name=\"Spectator_Detector\" Enable=\"{PlayerChecks.SpectatorEnabled}\" Admin_Level=\"{PlayerChecks.Spectator_Admin_Level}\" />");
                 sw.WriteLine($"        <Tool Name=\"TP_Command\" Enable=\"{ChatCommandTP.IsEnabled}\" TP_Cost=\"{ChatCommandTP.TPCost}\" TP_Max_Count=\"{ChatCommandTP.TPMaxCount}\" />");
                 sw.WriteLine($"        <Tool Name=\"Vote_Command\" Enable=\"{ChatCommandVote.IsEnabled}\" Gain_Per_Vote=\"{ChatCommandVote.GainPerVote}\" API_Server_Token=\"{ChatCommandVote.APIServerToken}\" />");
