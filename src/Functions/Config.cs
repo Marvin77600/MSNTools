@@ -14,7 +14,7 @@ namespace MSNTools
     public class Config
     {
         public static string ModName = "MSNTools";
-        public const string ModVersion = "1.0.0";
+        public const string ModVersion = "1.0.32";
         public static string GameVersion = $"{Constants.cVersionMajor}.{Constants.cVersionMinor} (b{Constants.cVersionBuild})";
         public static string ModPrefix = $"[{ModName.ToUpper()}]", Server_Response_Name = $"{ModName}", Chat_Response_Color = "[00FF00]";
         public static string ConfigPath = $"{GamePrefs.GetString(EnumGamePrefs.SaveGameFolder)}/{ModName}";
