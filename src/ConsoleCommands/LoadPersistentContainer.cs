@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MSNTools.ConsoleCommands
 {
-    public class LoadPersistentContainer : ConsoleCmdAbstract
+    public class LoadPersistentContainer : MSNConsoleCmdAbstract
     {
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
