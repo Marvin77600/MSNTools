@@ -61,6 +61,7 @@ namespace MSNTools
                     {
                         PersistentContainer.Instance.Players[clientInfo.PlatformId.ToString()].PlayerWallet += value;
                     }
+                    PersistentContainer.DataChange = true;
                 }
             }
             catch (Exception e)

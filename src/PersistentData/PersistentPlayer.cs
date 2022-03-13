@@ -1,5 +1,4 @@
-﻿using MSNTools.Functions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace MSNTools.PersistentData
@@ -32,6 +31,10 @@ namespace MSNTools.PersistentData
         {
             get
             {
+                if (lastVote == null)
+                {
+                    lastVote = new DateTime();
+                }
                 return lastVote;
             }
             set
@@ -44,6 +47,10 @@ namespace MSNTools.PersistentData
         {
             get
             {
+                if (time == null)
+                {
+                    time = DateTime.UtcNow;
+                }
                 return time;
             }
             set
@@ -68,6 +75,10 @@ namespace MSNTools.PersistentData
         {
             get
             {
+                if (tpPositions == null)
+                {
+                    tpPositions = new Dictionary<string, string>();
+                }
                 return tpPositions;
             }
             set

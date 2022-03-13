@@ -1,5 +1,4 @@
-﻿using MSNTools.Functions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -11,7 +10,6 @@ namespace MSNTools.PersistentData
     {
         public static bool DataChange = false;
         public MSNLocalization.Language ServerLanguage;
-        private int? nextSellID;
 
         private static string filepath = string.Format("{0}/MSNTools.bin", Config.ConfigPath);
         private static PersistentContainer instance;
@@ -21,7 +19,6 @@ namespace MSNTools.PersistentData
         private List<string> regionReset;
         private DateTime timeResetRegionFiles;
         private Dictionary<string, string[]> serverLocations;
-        private List<ShopStructure> shopList;
 
         public static PersistentContainer Instance
         {
@@ -59,22 +56,27 @@ namespace MSNTools.PersistentData
                 {
                     if (!Saving)
                     {
+                        MSNUtils.LogWarning("PersistentContainer.Save() 1");
                         Saving = true;
-                        Stream stream = File.Open(filepath, FileMode.Create, FileAccess.ReadWrite);
-                        BinaryFormatter bFormatter = new BinaryFormatter();
-                        bFormatter.Serialize(stream, this);
-                        stream.Close();
-                        stream.Dispose();
-                        Saving = false;
+                        MSNUtils.LogWarning("PersistentContainer.Save() 2");
+                        using (Stream stream = File.Open(filepath, FileMode.Create, FileAccess.ReadWrite))
+                        {
+                            MSNUtils.LogWarning("PersistentContainer.Save() 3");
+                            BinaryFormatter bFormatter = new BinaryFormatter();
+                            MSNUtils.LogWarning("PersistentContainer.Save() 4");
+                            bFormatter.Serialize(stream, this);
+                            MSNUtils.LogWarning("PersistentContainer.Save() 5");
+                        }
                     }
                     DataChange = false;
+                    MSNUtils.LogWarning("PersistentContainer.Save() 6");
                 }
             }
             catch (Exception e)
             {
-                Saving = false;
                 MSNUtils.LogError($"Exception in PersistentContainer.Save: {e.Message}");
             }
+            Saving = false;
         }
 
         public bool Load()
@@ -84,21 +86,21 @@ namespace MSNTools.PersistentData
                 if (File.Exists(filepath))
                 {
                     PersistentContainer obj;
-                    Stream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
-                    BinaryFormatter bFormatter = new BinaryFormatter();
-                    obj = (PersistentContainer)bFormatter.Deserialize(stream);
-                    stream.Close();
-                    stream.Dispose();
+                    using (Stream stream = File.Open(filepath, FileMode.Open, FileAccess.Read))
+                    {
+                        BinaryFormatter bFormatter = new BinaryFormatter();
+                        obj = (PersistentContainer)bFormatter.Deserialize(stream);
+                    }
                     instance = obj;
                     return true;
                 }
                 else
                 {
-                    Stream stream = File.Open(filepath, FileMode.Create, FileAccess.ReadWrite);
-                    BinaryFormatter bFormatter = new BinaryFormatter();
-                    bFormatter.Serialize(stream, this);
-                    stream.Close();
-                    stream.Dispose();
+                    using (Stream stream = File.Open(filepath, FileMode.Create, FileAccess.ReadWrite))
+                    {
+                        BinaryFormatter bFormatter = new BinaryFormatter();
+                        bFormatter.Serialize(stream, this);
+                    }
                     return true;
                 }
             }
@@ -108,7 +110,7 @@ namespace MSNTools.PersistentData
             }
             return false;
         }
-
+        
         public Dictionary<string, string[]> ServerLocations
         {
             get
@@ -166,38 +168,6 @@ namespace MSNTools.PersistentData
             set
             {
                 regionReset = value;
-            }
-        }
-
-        public List<ShopStructure> ShopList
-        {
-            get
-            {
-                if (shopList == null)
-                {
-                    shopList = new List<ShopStructure>();
-                }
-                return shopList;
-            }
-            set
-            {
-                shopList = value;
-            }
-        }
-
-        public int NextSellID
-        {
-            get
-            {
-                if (nextSellID == null)
-                {
-                    nextSellID = 0;
-                }
-                return (int)nextSellID;
-            }
-            set
-            {
-                nextSellID = value;
             }
         }
     }

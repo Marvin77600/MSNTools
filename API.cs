@@ -100,7 +100,6 @@ namespace MSNTools
                         {
                             if (PersistentContainer.Instance.Players[cInfo.PlatformId.ToString()].IsDonator)
                             {
-                                MSNUtils.LogWarning($"Don de {Bank.DonatorGainEveryHours} {Bank.DeviseName}");
                                 Bank.GiveMoney(cInfo, Bank.DonatorGainEveryHours);
                             }
                             else
@@ -178,6 +177,7 @@ namespace MSNTools
         {
             try
             {
+                PersistentContainer.Instance.Load();
                 Timers.TimerStart();
                 ModEventsDiscordBehaviour.GameStartDone();
             }
@@ -210,7 +210,6 @@ namespace MSNTools
                     if (_respawnReason.Equals(RespawnType.JoinMultiplayer))
                     {
                         ModEventsDiscordBehaviour.PlayerSpawnedInWorld(_cInfo);
-                        ChatCommandBuy.NotifSellerWhenConnected(_cInfo);
                         PersistentContainer.DataChange = true;
                     }
                     else if (_respawnReason.Equals(RespawnType.EnterMultiplayer))
