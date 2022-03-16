@@ -19,6 +19,8 @@ namespace MSNTools.Discord
             {
                 int day = GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime());
                 int bloodMoonFrequency = GamePrefs.GetInt(EnumGamePrefs.BloodMoonFrequency);
+                if (bloodMoonFrequency == 0)
+                    return false;
                 int modulo = day % bloodMoonFrequency;
 
                 if (modulo == 0)
