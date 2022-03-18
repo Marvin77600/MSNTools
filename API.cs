@@ -177,7 +177,6 @@ namespace MSNTools
         {
             try
             {
-                PersistentContainer.Instance.Load();
                 Timers.TimerStart();
                 ModEventsDiscordBehaviour.GameStartDone();
             }
