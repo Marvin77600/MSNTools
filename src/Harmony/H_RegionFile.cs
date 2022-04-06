@@ -10,8 +10,7 @@ namespace MSNTools.Harmony
 {
     public class H_RegionFile
     {
-        [HarmonyPatch(typeof(RegionFile), "Get")]
-        [HarmonyPatch(new Type[] { typeof(string), typeof(int), typeof(int) })]
+        [HarmonyPatch(typeof(RegionFile), "Get", new Type[] { typeof(string), typeof(int), typeof(int) })]
         public class H_RegionFile_Get
         {
             static bool Prefix(RegionFile __result, string dir, int rX, int rZ, ref string ___EXT, ref byte[] ___FileHeaderMagicBytes)

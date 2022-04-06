@@ -12,8 +12,7 @@ namespace MSNTools.src.Harmony
 {
     public class H_NetPackageDamageEntity
     {
-        [HarmonyPatch(typeof(NetPackageDamageEntity), "ProcessPackage")]
-        [HarmonyPatch(new Type[] { typeof(World), typeof(GameManager) })]
+        [HarmonyPatch(typeof(NetPackageDamageEntity), "ProcessPackage", new Type[] { typeof(World), typeof(GameManager) })]
         public class H_NetPackageDamageEntity_ProcessPackage
         {
             static bool Prefix(NetPackageDamageEntity __instance, World _world, GameManager _callbacks, ref EnumDamageTypes ___damageTyp, ref EnumDamageSource ___damageSrc, ref int ___entityId, ref int ___attackerEntityId, ref Vector3 ___dirV, ref string ___hitTransformName, ref Vector3 ___hitTransformPosition, ref Vector2 ___uvHit, ref bool ___bIgnoreConsecutiveDamages, ref float ___damageMultiplier, ref bool ___bIsDamageTransfer, ref byte ___bonusDamageType, ref ItemValue ___attackingItem, ref ushort ___strength, ref int ___movementState, ref int ___hitDirection, ref int ___hitBodyPart, ref bool ___bPainHit, ref bool ___bFatal, ref bool ___bCritical, ref float ___random, ref bool ___bCrippleLegs, ref bool ___bDismember, ref bool ___bTurnIntoCrawler, ref byte ___StunType, ref float ___StunDuration, ref EnumEquipmentSlot ___ArmorSlot, ref EnumEquipmentSlotGroup ___ArmorSlotGroup, ref int ___ArmorDamage)

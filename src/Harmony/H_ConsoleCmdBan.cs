@@ -7,8 +7,7 @@ namespace MSNTools.Harmony
 {
     public class H_ConsoleCmdBan
     {
-        [HarmonyPatch(typeof(ConsoleCmdBan), "Execute")]
-        [HarmonyPatch(new Type[] { typeof(List<string>), typeof(CommandSenderInfo) })]
+        [HarmonyPatch(typeof(ConsoleCmdBan), "Execute", new Type[] { typeof(List<string>), typeof(CommandSenderInfo) })]
         public class H_ConsoleCmdBan_Execute
         {
             private static void Postfix(List<string> _params, CommandSenderInfo _senderInfo)

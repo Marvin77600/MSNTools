@@ -3,8 +3,7 @@ using System;
 
 namespace MSNTools.Harmony
 {
-    [HarmonyPatch(typeof(EntityAlive), "AwardKill")]
-    [HarmonyPatch(new Type[] { typeof(EntityAlive) })]
+    [HarmonyPatch(typeof(EntityAlive), "AwardKill", new Type[] { typeof(EntityAlive) })]
     public class PatchProcessDamageEntityAlive
     {
         static void Postfix(EntityAlive __instance, EntityAlive killer)
