@@ -86,8 +86,9 @@ namespace MSNTools
                         _tiles = _c.GetTileEntities();
                         if (_tiles.dict.Values != null)
                         {
-                            foreach (TileEntity _tile in _tiles.dict.Values)
+                            for (int j = 0; j < _tiles.dict.Count; j++)
                             {
+                                TileEntity _tile = _tiles.list[j];
                                 if (_tile == null)
                                     return;
                                 if (_tile.GetTileEntityType().ToString().Contains("SecureLoot"))
