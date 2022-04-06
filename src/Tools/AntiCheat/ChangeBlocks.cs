@@ -34,7 +34,6 @@ namespace MSNTools
                                     Block newBlock = newBlockInfo.blockValue.Block;
                                     if (oldBlockValue.type == BlockValue.Air.type)//old block was air
                                     {
-                                        List<string> regionsReset = PersistentContainer.Instance.RegionsReset;
                                         PrefabInstance prefab = GameManager.Instance.World.GetPOIAtPosition(newBlockInfo.pos.ToVector3());
                                         if (newBlock is BlockSleepingBag)//placed a sleeping bag
                                         {

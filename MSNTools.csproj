@@ -143,11 +143,14 @@
     <Compile Include="src\CustomModEvents\CustomModEvent.cs" />
     <Compile Include="src\CustomModEvents\CustomModEventAbs.cs" />
     <Compile Include="src\Discord\BloodMoonAlerts.cs" />
-    <Compile Include="src\Harmony\PatchAIDirectorBloodMoonComponent.cs" />
-    <Compile Include="src\Harmony\PatchChangeBlocks.cs" />
-    <Compile Include="src\Harmony\PatchProcessDamageEntityAlive.cs" />
+    <Compile Include="src\Harmony\H_GetLandClaims.cs" />
+    <Compile Include="src\Harmony\H_AIDirectorBloodMoonComponent.cs" />
+    <Compile Include="src\Harmony\H_ChangeBlocks.cs" />
+    <Compile Include="src\Harmony\H_EntityAlive.cs" />
     <Compile Include="src\Functions\MSNLocalization.cs" />
+    <Compile Include="src\Harmony\H_NetPackageDamageEntity.cs" />
     <Compile Include="src\PersistentData\ItemDataSerializable.cs" />
+    <Compile Include="src\PersistentData\ServerLocation.cs" />
     <Compile Include="src\Tools\AntiCheat\ChangeBlocks.cs" />
     <Compile Include="src\Tools\AntiCheat\InventoryChecks.cs" />
     <Compile Include="src\Tools\AntiCheat\PlayerChecks.cs" />
@@ -160,7 +163,7 @@
     <Compile Include="src\Discord\Utils.cs" />
     <Compile Include="src\Functions\Config.cs" />
     <Compile Include="src\Functions\Timers.cs" />
-    <Compile Include="src\Harmony\PatchAddWebhookConsoleCmdBan.cs" />
+    <Compile Include="src\Harmony\H_ConsoleCmdBan.cs" />
     <Compile Include="src\PersistentData\PersistentContainer.cs" />
     <Compile Include="src\PersistentData\PersistentPlayer.cs" />
     <Compile Include="src\PersistentData\PersistentPlayers.cs" />
@@ -170,6 +173,7 @@
     <Compile Include="src\Tools\PlayerInvulnerabilityAtTrader\PlayerInvulnerabilityAtTrader.cs" />
     <Compile Include="src\Tools\Zones\ResetRegions.cs" />
     <Compile Include="src\Tools\Zones\Zones.cs" />
+    <Compile Include="src\Utils\Extensions.cs" />
     <Compile Include="src\Utils\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
