@@ -427,6 +427,26 @@ namespace MSNTools.Discord
             wbh.Send(msg);
         }
 
+        public static void SendAlertPlayerKilledAtTrader(ClientInfo killerClientInfo, ClientInfo targetClientInfo)
+        {
+            if (killerClientInfo != null && targetClientInfo != null)
+            {
+                string killerSteamID = killerClientInfo.PlatformId.ToString().Substring(6);
+                string targetSteamID = targetClientInfo.PlatformId.ToString().Substring(6);
+                DiscordWebhook wbh = new DiscordWebhook();
+                wbh.Url = GetWebHookUrl(EnumWebHookType.Alerts);
+                DiscordMessage msg = new DiscordMessage();
+                msg.Embeds = new List<DiscordEmbed>();
+                msg.Embeds.Add(new DiscordEmbed()
+                {
+                    Title = MSNLocalization.Get("playerKilledAtTrader", ServerLanguage, killerClientInfo.playerName, killerSteamID, targetClientInfo.playerName, targetSteamID),
+                    Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
+                    Color = AlertsColor
+                });
+                wbh.Send(msg);
+            }
+        }
+
         public static void SendEmbedToWebHook(EnumWebHookType webHookType, Color32 color, string content)
         {
             DiscordWebhook wbh = new DiscordWebhook();

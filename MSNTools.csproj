@@ -143,6 +143,7 @@
     <Compile Include="src\CustomModEvents\CustomModEvent.cs" />
     <Compile Include="src\CustomModEvents\CustomModEventAbs.cs" />
     <Compile Include="src\Discord\BloodMoonAlerts.cs" />
+    <Compile Include="src\Harmony\H_GameManager.cs" />
     <Compile Include="src\Harmony\H_GetLandClaims.cs" />
     <Compile Include="src\Harmony\H_AIDirectorBloodMoonComponent.cs" />
     <Compile Include="src\Harmony\H_ChangeBlocks.cs" />

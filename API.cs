@@ -90,7 +90,10 @@ namespace MSNTools
         {
             try
             {
-                if (__instance is EntityZombie && killer != __instance && killer != null && killer is EntityPlayer)
+                EntityAlive target = __instance;
+
+                // Player kill zombie
+                if (target is EntityZombie && killer != target && killer != null && killer is EntityPlayer)
                 {
                     EntityPlayer player = (EntityPlayer)killer;
                     ClientInfo cInfo = PersistentOperations.GetClientInfoFromEntityId(player.entityId);
@@ -108,6 +111,18 @@ namespace MSNTools
                             }
                             PersistentContainer.DataChange = true;
                         }
+                    }
+                }
+
+                // Player kill player
+                if (target is EntityPlayer && killer != target && killer != null && killer is EntityPlayer)
+                {
+                    if (Zones.IsInTraderArea(target as EntityPlayer) && PlayerInvulnerabilityAtTrader.IsEnabled)
+                    {
+                        ClientInfo killerClientInfo, targetClientInfo;
+                        killerClientInfo = PersistentOperations.GetClientInfoFromEntityId(killer.entityId);
+                        targetClientInfo = PersistentOperations.GetClientInfoFromEntityId(target.entityId);
+                        DiscordWebhookSender.SendAlertPlayerKilledAtTrader(killerClientInfo, targetClientInfo);
                     }
                 }
             }
@@ -141,7 +156,14 @@ namespace MSNTools
 
         private void BlockChange(GameManager _gameManager, PlatformUserIdentifierAbs _platformUserIdentifierAbs, List<BlockChangeInfo> _blockChangeInfos)
         {
-            CheckChangeBlocks.Exec(_gameManager, _platformUserIdentifierAbs, _blockChangeInfos);
+            try
+            {
+                CheckChangeBlocks.Exec(_gameManager, _platformUserIdentifierAbs, _blockChangeInfos);
+            }
+            catch (Exception e)
+            {
+                MSNUtils.LogError($"Error in API.BlockChange: {e.Message}");
+            }
         }
 
         private void StartBloodMoon()

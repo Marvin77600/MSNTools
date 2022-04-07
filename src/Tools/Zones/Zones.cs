@@ -82,5 +82,15 @@ namespace MSNTools
             List<string> regionsReset = PersistentContainer.Instance.RegionsReset;
             return regionsReset.Contains(region);
         }
+
+        public static bool IsInTraderArea(EntityPlayer player)
+        {
+            if (player != null)
+            {
+                PrefabInstance prefab = GameManager.Instance.World.GetPOIAtPosition(player.position);
+                return prefab.prefab.bTraderArea;
+            }
+            return false;
+        }
     }
 }
