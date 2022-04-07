@@ -54,11 +54,11 @@ namespace MSNTools.Discord
             {
                 if (DiscordWebhookSender.ChatEnabled)
                 {
-                    if (_type.Equals(EChatType.Global))
+                    if (_type.Equals(EChatType.Global) && (DiscordWebhookSender.ChatType == DiscordWebhookSender.EnumChatType.Global || DiscordWebhookSender.ChatType ==  DiscordWebhookSender.EnumChatType.All))
                         DiscordWebhookSender.SendChatMessageToWebhook(DiscordWebhookSender.EnumWebHookType.Chat, $"[Global] **{_cInfo.playerName}** : {_msg}");
-                    else if (_type.Equals(EChatType.Friends))
+                    else if (_type.Equals(EChatType.Friends) && (DiscordWebhookSender.ChatType == DiscordWebhookSender.EnumChatType.Friends || DiscordWebhookSender.ChatType == DiscordWebhookSender.EnumChatType.All))
                         DiscordWebhookSender.SendChatMessageToWebhook(DiscordWebhookSender.EnumWebHookType.Chat, $"[{MSNLocalization.Get("discordFriends", ServerLanguage)}] **{_cInfo.playerName}** : {_msg}");
-                    else if (_type.Equals(EChatType.Party))
+                    else if (_type.Equals(EChatType.Party) && (DiscordWebhookSender.ChatType == DiscordWebhookSender.EnumChatType.Party || DiscordWebhookSender.ChatType == DiscordWebhookSender.EnumChatType.All))
                     {
                         StringBuilder stringBuilder = new StringBuilder();
                         EntityPlayer entityPlayer = GameManager.Instance.World.Players.dict[_cInfo.entityId];
@@ -81,6 +81,7 @@ namespace MSNTools.Discord
         public static bool ChatEnabled, SanctionsEnabled, ServerInfosEnabled, PlayerInfosEnabled, AlertsEnabled, BloodMoonAlertsEnabled = false;
         public static string ChatWebHookUrl, SanctionsWebHookUrl, ServerInfosWebHookUrl, PlayerInfosWebHookUrl, AlertsWekHookUrl, BloodMoonWebHookUrl, FooterImageUrl, BloodMoonAlertImageUrl = string.Empty;
         public static Color32 PlayerConnectedColor, PlayerDisconnectedColor, SanctionsColor, AlertsColor, ServerOnlineColor, ServerOfflineColor = Color.black;
+        public static EnumChatType ChatType = new EnumChatType();
 
         private static string GetWebHookUrl(EnumWebHookType webHookType)
         {
@@ -470,6 +471,14 @@ namespace MSNTools.Discord
             ServerInfos,
             Alerts,
             BloodMoon
+        }
+
+        public enum EnumChatType
+        {
+            Global,
+            Friends,
+            Party,
+            All
         }
     }
 }

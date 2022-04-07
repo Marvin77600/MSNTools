@@ -48,7 +48,7 @@ namespace MSNTools
                     {"Bank", new List<string> { "Enable", "Gain_Every_Hours", "Donator_Gain_Every_Hours", "Hour", "Devise_Name", "Max"} },
                     {"BloodMoon_Alerts_Webhook", new List<string> { "Enable", "Webhook_Url", "Hour"} },
                     {"Chat_Commands", new List<string> { "Enable", "Prefix"} },
-                    {"Chat_Webhook", new List<string> { "Enable", "Webhook_Url" } },
+                    {"Chat_Webhook", new List<string> { "Enable", "Webhook_Url", "Type" } },
                     {"Godmode_Detector", new List<string> { "Enable", "Admin_Level" } },
                     {"High_Ping_Kicker", new List<string> { "Enable", "Max_Ping", "Flags" } },
                     {"Inventory_Check", new List<string> { "Enable", "Admin_Level", "Check_Storage", "Exceptions_Items" } },
@@ -292,6 +292,11 @@ namespace MSNTools
                                                 if (!TryParseUrl(attribute, out DiscordWebhookSender.ChatWebHookUrl, nameAttribute, paramName, subChild))
                                                     continue;
                                             }
+                                            else if (paramName == "Type")
+                                            {
+                                                if (!TryParseChatType(attribute, out DiscordWebhookSender.ChatType, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
                                             break;
                                         case "Chat_Commands":
                                             if (paramName == "Enable")
@@ -530,7 +535,7 @@ namespace MSNTools
                 sw.WriteLine($"        <Tool Name=\"Bank\" Enable=\"{Bank.IsEnabled}\" Hours=\"{Bank.Hours}\" Donator_Gain_Every_Hours=\"{Bank.DonatorGainEveryHours}\" Gain_Every_Hours=\"{Bank.GainEveryHours}\" Devise_Name=\"{Bank.DeviseName}\" Max=\"{Bank.Max}\" />");
                 sw.WriteLine($"        <Tool Name=\"BloodMoon_Alerts_Webhook\" Webhook_Url=\"{DiscordWebhookSender.BloodMoonWebHookUrl}\" Enable=\"{BloodMoonAlerts.IsEnabled}\" Hour=\"{BloodMoonAlerts.Hour}\" />");
                 sw.WriteLine($"        <Tool Name=\"Chat_Commands\" Enable=\"{ChatCommandsHook.ChatCommandsEnabled}\" Prefix=\"{ChatCommandsHook.ChatCommandsPrefix}\" />");
-                sw.WriteLine($"        <Tool Name=\"Chat_Webhook\" Enable=\"{DiscordWebhookSender.ChatEnabled}\" Webhook_Url=\"{DiscordWebhookSender.ChatWebHookUrl}\" />");
+                sw.WriteLine($"        <Tool Name=\"Chat_Webhook\" Enable=\"{DiscordWebhookSender.ChatEnabled}\" Webhook_Url=\"{DiscordWebhookSender.ChatWebHookUrl}\" Type=\"{DiscordWebhookSender.ChatType}\" />");
                 sw.WriteLine($"        <Tool Name=\"Godmode_Detector\" Enable=\"{PlayerChecks.GodEnabled}\" Admin_Level=\"{PlayerChecks.God_Admin_Level}\" />");
                 //sw.WriteLine($"        <Tool Name=\"High_Ping_Kicker\" Enable=\"{0}\" Max_Ping=\"{1}\" Flags=\"{2}\" />");
                 sw.WriteLine($"        <Tool Name=\"Inventory_Check\" Enable=\"{InventoryChecks.IsEnabled}\" Admin_Level=\"{InventoryChecks.Admin_Level}\" Check_Storage=\"{InventoryChecks.Check_Storage}\" Exceptions_Items=\"{InventoryChecks.Exceptions_Items}\" />");
@@ -678,6 +683,37 @@ namespace MSNTools
             else
             {
                 result = string.Empty;
+                MSNUtils.LogWarning($"Ignoring {nameAttribute} entry in {ConfigFile} because of invalid string value for '{paramName}' attribute: {node.OuterXml}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Parse un <see cref="DiscordWebhookSender.EnumChatType"/>.
+        /// </summary>
+        /// <param name="value">Valeur récupérée</param>
+        /// <param name="result">Valeur retournée</param>
+        /// <param name="nameAttribute">Nom de l'attribut</param>
+        /// <param name="paramName">Nom du paramètre</param>
+        /// <param name="node">Noeud XML</param>
+        /// <returns><see cref="bool"/></returns>
+        static bool TryParseChatType(string value, out DiscordWebhookSender.EnumChatType result, string nameAttribute, string paramName, XmlNode node)
+        {
+            if (value.Length != 0)
+            {
+                if (value.EqualsCaseInsensitive("global"))
+                    result = DiscordWebhookSender.EnumChatType.Global;
+                if (value.EqualsCaseInsensitive("friends"))
+                    result = DiscordWebhookSender.EnumChatType.Friends;
+                if (value.EqualsCaseInsensitive("party"))
+                    result = DiscordWebhookSender.EnumChatType.Party;
+                else
+                    result = DiscordWebhookSender.EnumChatType.All;
+                return true;
+            }
+            else
+            {
+                result = DiscordWebhookSender.EnumChatType.All;
                 MSNUtils.LogWarning($"Ignoring {nameAttribute} entry in {ConfigFile} because of invalid string value for '{paramName}' attribute: {node.OuterXml}");
                 return false;
             }
