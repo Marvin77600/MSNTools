@@ -12,6 +12,9 @@ namespace MSNTools
         public static int Hour = 0;
         public static int Day = 0;
 
+        /// <summary>
+        /// Supprime les reset regions.
+        /// </summary>
         public static void Exec()
         {
             try

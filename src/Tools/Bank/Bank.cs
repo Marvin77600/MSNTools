@@ -14,6 +14,9 @@ namespace MSNTools
         public static int Hours = 1;
         public static int Max = 1;
 
+        /// <summary>
+        /// Give de l'argent aux joueurs toutes les X heures.
+        /// </summary>
         public static void CheckGiveMoneyEveryTime()
         {
             try
@@ -45,6 +48,11 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Give de l'argent à un joueur.
+        /// </summary>
+        /// <param name="clientInfo">Infos client du joueur</param>
+        /// <param name="value">Montant</param>
         public static void GiveMoney(ClientInfo clientInfo, int value)
         {
             try
@@ -70,6 +78,12 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Renvoi si oui ou non le joueur peut avoir de l'argent.
+        /// </summary>
+        /// <param name="clientInfo">Infos client du joueur</param>
+        /// <param name="value">Montant</param>
+        /// <returns><see cref="int"/></returns>
         public static int CanTakeMoney(ClientInfo clientInfo, int value)
         {
             try
@@ -94,33 +108,15 @@ namespace MSNTools
             {
                 MSNUtils.LogError($"Error in Bank.CanTakeMoney: {e.Message}");
             }
-            MSNUtils.LogWarning($"CanTakeMoney() 0");
             return 0;
         }
 
-        public static void FixedMaxMoney()
-        {
-            try
-            {
-                List<ClientInfo> clientsInfo = PersistentOperations.ClientList();
-
-                foreach (ClientInfo clientInfo in clientsInfo)
-                {
-                    PersistentPlayer persistentPlayer = PersistentContainer.Instance.Players[clientInfo.PlatformId.ToString()];
-
-                    if (persistentPlayer.PlayerWallet > Max)
-                    {
-                        persistentPlayer.PlayerWallet = Max;
-                        PersistentContainer.DataChange = true;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                MSNUtils.LogError($"Error in Bank.FixedMaxMoney: {e.Message}");
-            }
-        }
-
+        /// <summary>
+        /// Renvoi si oui ou non le joueur a assez d'argent.
+        /// </summary>
+        /// <param name="clientInfo">Infos client du joueur</param>
+        /// <param name="value">Montant</param>
+        /// <returns><see cref="bool"/></returns>
         public static bool HasEnoughMoney(ClientInfo clientInfo, int value)
         {
             MSNLocalization.Language language = PersistentContainer.Instance.Players[clientInfo.PlatformId.ToString()].Language;
@@ -134,6 +130,11 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Renvoi si oui ou non le joueur a atteint le maximum d'argent.
+        /// </summary>
+        /// <param name="clientInfo">Infos client du joueur</param>
+        /// <returns><see cref="bool"/></returns>
         public static bool HaveMaxMoney(ClientInfo clientInfo)
         {
             if (PersistentContainer.Instance.Players[clientInfo.PlatformId.ToString()].PlayerWallet >= Max)

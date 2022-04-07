@@ -7,9 +7,10 @@ public static class MSNLocalization
     public static Dictionary<string, string> frenchLocalizations;
     public static Dictionary<string, string> englishLocalizations;
 
-    public static void Init() => LoadXML();
-
-    private static void LoadXML()
+    /// <summary>
+    /// Initialisation de <see cref="MSNLocalization"/>.
+    /// </summary>
+    public static void Init()
     {
         frenchLocalizations = new Dictionary<string, string>();
         englishLocalizations = new Dictionary<string, string>();
@@ -27,6 +28,12 @@ public static class MSNLocalization
         }
     }
 
+    /// <summary>
+    /// Renvoi une chaine de caractères correspondant à la clé et au language renseignés.
+    /// </summary>
+    /// <param name="key">Clé</param>
+    /// <param name="language">Langue du joueur/serveur</param>
+    /// <returns><see cref="string"/></returns>
     public static string Get(string key, Language language)
     {
         if (language == Language.French)
@@ -42,6 +49,12 @@ public static class MSNLocalization
         return key;
     }
 
+    /// <summary>
+    /// Renvoi une chaine de caractères correspondant à la clé et au language renseignés, remplace les {} par les objets renseignés.
+    /// </summary>
+    /// <param name="key">Clé</param>
+    /// <param name="language">Langue du joueur/serveur</param>
+    /// <returns><see cref="string"/></returns>
     public static string Get(string key, Language language, params object[] parameters)
     {
         int i = parameters.Length;

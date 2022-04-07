@@ -8,6 +8,7 @@ namespace MSNTools
         public static readonly CustomModEvent<GameManager, PlatformUserIdentifierAbs, List<BlockChangeInfo>> BlockChange;
         public static readonly CustomModEvent StartBloodMoon;
         public static readonly CustomModEvent EndBloodMoon;
+        public static readonly CustomModEvent<EntityAlive, EntityAlive> PlayerKillPlayer;
 
         static CustomModEvents()
         {
@@ -26,6 +27,10 @@ namespace MSNTools
             CustomModEvent modEvent4 = new CustomModEvent();
             modEvent4.eventName = nameof(EndBloodMoon);
             EndBloodMoon = modEvent4;
+
+            CustomModEvent<EntityAlive, EntityAlive> modEvent5 = new CustomModEvent<EntityAlive, EntityAlive>();
+            modEvent5.eventName = nameof(PlayerKillPlayer);
+            PlayerKillPlayer = modEvent5;
         }
     }
 }

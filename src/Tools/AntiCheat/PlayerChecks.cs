@@ -9,6 +9,9 @@ namespace MSNTools
         public static bool GodEnabled, SpectatorEnabled = false;
         public static int God_Admin_Level = 1, Spectator_Admin_Level = 1;
 
+        /// <summary>
+        /// Check si des joueurs sont en godmode ou en mode spectateur, si oui ban direct du joueur.
+        /// </summary>
         public static void Exec()
         {
             try

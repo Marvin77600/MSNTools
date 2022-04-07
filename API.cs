@@ -30,6 +30,7 @@ namespace MSNTools
                 CustomModEvents.BlockChange.RegisterHandler(BlockChange);
                 CustomModEvents.StartBloodMoon.RegisterHandler(StartBloodMoon);
                 CustomModEvents.EndBloodMoon.RegisterHandler(EndBloodMoon);
+                CustomModEvents.PlayerKillPlayer.RegisterHandler(PlayerKillPlayer);
                 MSNUtils.Log($"Mod chargé");
                 var harmony = new HarmonyX(GetType().ToString());
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -40,6 +41,13 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Méthode s'exécutant lorsqu'un joueur se log au serveur.
+        /// </summary>
+        /// <param name="_cInfo">Infos client du joueur</param>
+        /// <param name="_message">Message qui apparaît sur l'écran</param>
+        /// <param name="_stringBuild">?</param>
+        /// <returns></returns>
         private bool PlayerLogin(ClientInfo _cInfo, string _message, StringBuilder _stringBuild)
         {
             try
@@ -69,6 +77,9 @@ namespace MSNTools
             return true;
         }
 
+        /// <summary>
+        /// Méthode s'exécutant lorsque le jeu démarre.
+        /// </summary>
         private void GameAwake()
         {
             try
@@ -86,6 +97,11 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Méthode s'exécutant lorsqu'une entité meurt.
+        /// </summary>
+        /// <param name="__instance">L'entité qui s'est faite tuée</param>
+        /// <param name="killer">L'entité qui a tuée</param>
         private void AwardKill(EntityAlive __instance, EntityAlive killer)
         {
             try
@@ -113,25 +129,18 @@ namespace MSNTools
                         }
                     }
                 }
-
-                // Player kill player
-                if (target is EntityPlayer && killer != target && killer != null && killer is EntityPlayer)
-                {
-                    if (Zones.IsInTraderArea(target as EntityPlayer) && PlayerInvulnerabilityAtTrader.IsEnabled)
-                    {
-                        ClientInfo killerClientInfo, targetClientInfo;
-                        killerClientInfo = PersistentOperations.GetClientInfoFromEntityId(killer.entityId);
-                        targetClientInfo = PersistentOperations.GetClientInfoFromEntityId(target.entityId);
-                        DiscordWebhookSender.SendAlertPlayerKilledAtTrader(killerClientInfo, targetClientInfo);
-                    }
-                }
             }
             catch (Exception e)
             {
                 MSNUtils.LogError($"Error in API.AwardKill: {e.Message}");
             }
         }
-        
+
+        /// <summary>
+        /// Méthode s'exécutant lors de la sauvegarde du profil joueur.
+        /// </summary>
+        /// <param name="_cInfo">Infos client du joueur</param>
+        /// <param name="_playerDataFile">Sauvegarde du profil joueur</param>
         private void SavePlayerData(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
         {
             try
@@ -154,6 +163,12 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Méthode s'exécutant lors de la pose d'un bloc.
+        /// </summary>
+        /// <param name="_gameManager">?</param>
+        /// <param name="_platformUserIdentifierAbs">Données de la plateforme du joueur</param>
+        /// <param name="_blockChangeInfos">Liste des blocs posés</param>
         private void BlockChange(GameManager _gameManager, PlatformUserIdentifierAbs _platformUserIdentifierAbs, List<BlockChangeInfo> _blockChangeInfos)
         {
             try
@@ -165,7 +180,9 @@ namespace MSNTools
                 MSNUtils.LogError($"Error in API.BlockChange: {e.Message}");
             }
         }
-
+         /// <summary>
+         /// Méthode s'exécutant au démarrage d'une bloodmoon.
+         /// </summary>
         private void StartBloodMoon()
         {
             try
@@ -179,6 +196,9 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Méthode s'exécutant à la fin d'une bloodmoon.
+        /// </summary>
         private void EndBloodMoon()
         {
             try
@@ -195,6 +215,35 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Méthode s'exécutant lorsqu'un joueur tue un autre joueur.
+        /// </summary>
+        /// <param name="_mainEntity">Joueur tué</param>
+        /// <param name="_otherEntity">Joueur tueur</param>
+        private void PlayerKillPlayer(EntityAlive _mainEntity, EntityAlive _otherEntity)
+        {
+            try
+            {
+                if (_mainEntity != null && _otherEntity != null)
+                {
+                    if (Zones.IsInTraderArea(_mainEntity as EntityPlayer) && PlayerInvulnerabilityAtTrader.IsEnabled)
+                    {
+                        ClientInfo killerClientInfo, targetClientInfo;
+                        killerClientInfo = PersistentOperations.GetClientInfoFromEntityId(_otherEntity.entityId);
+                        targetClientInfo = PersistentOperations.GetClientInfoFromEntityId(_mainEntity.entityId);
+                        DiscordWebhookSender.SendAlertPlayerKilledAtTrader(killerClientInfo, targetClientInfo);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MSNUtils.LogError($"Error in API.PlayerKillPlayer: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Méthode s'exécutant lorsque le serveur est en ligne.
+        /// </summary>
         private void GameStartDone()
         {
             try
@@ -208,6 +257,9 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Méthode s'exécutant lorsque le serveur s'éteint.
+        /// </summary>
         private void GameShutdown()
         {
             try
@@ -222,6 +274,12 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Méthode s'exécutant lorsqu'un joueur apparaît sur le serveur.
+        /// </summary>
+        /// <param name="_cInfo">Infos client du joueur</param>
+        /// <param name="_respawnReason">Type de respawn</param>
+        /// <param name="_pos">Position du joueur</param>
         private void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
         {
             try
@@ -251,6 +309,11 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Méthode s'exécutant lorsqu'un joueur se déconnecte.
+        /// </summary>
+        /// <param name="_cInfo">Infos client du joueur</param>
+        /// <param name="_bShutdown">Est-ce que le serveur s'éteint ?</param>
         private void PlayerDisconnected(ClientInfo _cInfo, bool _bShutdown)
         {
             try
@@ -265,6 +328,17 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Méthode s'exécutant à la reception d'un message.
+        /// </summary>
+        /// <param name="_cInfo">Infos client du joueur</param>
+        /// <param name="_type">Type de chat</param>
+        /// <param name="_senderId">ID de l'entité</param>
+        /// <param name="_msg">Message</param>
+        /// <param name="_mainName">Qui envoi le message</param>
+        /// <param name="_localizeMain">?</param>
+        /// <param name="_recipientEntityIds">?</param>
+        /// <returns></returns>
         private bool ChatMessage(ClientInfo _cInfo, EChatType _type, int _senderId, string _msg, string _mainName, bool _localizeMain, List<int> _recipientEntityIds)
         {
             try

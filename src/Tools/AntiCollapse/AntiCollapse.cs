@@ -14,6 +14,9 @@ namespace MSNTools
         private static int fallingBlocksCount = 0;
         private static PlayerSorter sorter;
 
+        /// <summary>
+        /// Checks si des effondrements sont en cours.
+        /// </summary>
         public static void Exec()
         {
             try
@@ -63,7 +66,7 @@ namespace MSNTools
             }
         }
 
-        static List<EntityPlayer> GetPlayersNearCollapsePosition(Vector3 collapsePosition)
+        private static List<EntityPlayer> GetPlayersNearCollapsePosition(Vector3 collapsePosition)
         {
             try
             {
@@ -91,7 +94,7 @@ namespace MSNTools
         }
     }
 
-    public class PlayerSorter : IComparer<Entity>
+    public class PlayerSorter : IComparer<EntityPlayer>
     {
         private Vector3 self;
 
@@ -100,7 +103,7 @@ namespace MSNTools
             self = _self;
         }
 
-        private int isNearer(Entity _e, Entity _other)
+        private int isNearer(EntityPlayer _e, EntityPlayer _other)
         {
             float num1 = DistanceSqr(self, _e.position);
             float num2 = DistanceSqr(self, _other.position);
@@ -109,7 +112,7 @@ namespace MSNTools
             return num1 > num2 ? 1 : 0;
         }
 
-        public int Compare(Entity _obj1, Entity _obj2)
+        public int Compare(EntityPlayer _obj1, EntityPlayer _obj2)
         {
             return isNearer(_obj1, _obj2);
         }

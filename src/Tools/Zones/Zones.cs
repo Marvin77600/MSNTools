@@ -17,6 +17,9 @@ namespace MSNTools
         public static List<string> RemoveProtection = new List<string>();
         public static bool IsEnabled = false;
 
+        /// <summary>
+        /// Ajoute le <see cref="BuffResetZone"/> aux joueurs se trouvant dans des reset regions.
+        /// </summary>
         public static void Exec()
         {
             try
@@ -50,6 +53,11 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Renvoi une chaîne de caractères représentant la region où se trouve le joueur.
+        /// </summary>
+        /// <param name="player">Joueur</param>
+        /// <returns><see cref="string"/></returns>
         public static string GetRegionFile(EntityPlayer player)
         {
             if (player != null)
@@ -76,6 +84,11 @@ namespace MSNTools
             return string.Empty;
         }
 
+        /// <summary>
+        /// Renvoi si oui ou non le joueur se trouve dans une region reset.
+        /// </summary>
+        /// <param name="player">Joueur</param>
+        /// <returns><see cref="bool"/></returns>
         public static bool IsInRegionReset(EntityPlayer player)
         {
             string region = GetRegionFile(player);
@@ -83,12 +96,18 @@ namespace MSNTools
             return regionsReset.Contains(region);
         }
 
+        /// <summary>
+        /// Renvoi si oui ou non le joueur se trouve chez un trader.
+        /// </summary>
+        /// <param name="player">Joueur</param>
+        /// <returns><see cref="bool"/></returns>
         public static bool IsInTraderArea(EntityPlayer player)
         {
             if (player != null)
             {
                 PrefabInstance prefab = GameManager.Instance.World.GetPOIAtPosition(player.position);
-                return prefab.prefab.bTraderArea;
+                if (prefab != null)
+                    return prefab.prefab.bTraderArea;
             }
             return false;
         }

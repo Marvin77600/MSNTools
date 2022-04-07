@@ -64,6 +64,9 @@ namespace MSNTools
             }
         };
 
+        /// <summary>
+        /// Chargement du dossier MSNTools, creation du dossier le cas echéant.
+        /// </summary>
         public static void Load()
         {
             MSNUtils.Log($"Checking for save directory {ConfigPath}");
@@ -76,6 +79,9 @@ namespace MSNTools
             InitFileWatcher();
         }
 
+        /// <summary>
+        /// Chargement du fichier MSNToolsConfig.xml si existant, création du fichier le cas echéant.
+        /// </summary>
         public static void LoadXml()
         {
             MSNUtils.Log("---------------------------------------------------------------");
@@ -496,6 +502,9 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Création du fichier MSNTools.xml.
+        /// </summary>
         public static void WriteXml()
         {
             FileWatcher.EnableRaisingEvents = false;
@@ -542,6 +551,9 @@ namespace MSNTools
             FileWatcher.EnableRaisingEvents = true;
         }
 
+        /// <summary>
+        /// Initialise l'élément <see cref="FileWatcher"/> et défini ses évenements.
+        /// </summary>
         private static void InitFileWatcher()
         {
             FileWatcher = new FileSystemWatcher(ConfigPath, ConfigFile);
@@ -551,10 +563,7 @@ namespace MSNTools
             FileWatcher.EnableRaisingEvents = true;
         }
 
-        private static void OnFileChanged(object source, FileSystemEventArgs e)
-        {
-            LoadXml();
-        }
+        private static void OnFileChanged(object source, FileSystemEventArgs e) => LoadXml();
 
         public static void UpgradeXml(XmlNodeList _oldRootNodes)
         {
@@ -616,6 +625,15 @@ namespace MSNTools
             FileWatcher.EnableRaisingEvents = true;
         }
 
+        /// <summary>
+        /// Parse un booléen.
+        /// </summary>
+        /// <param name="value">Valeur récupérée</param>
+        /// <param name="result">Valeur retournée</param>
+        /// <param name="nameAttribute">Nom de l'attribut</param>
+        /// <param name="paramName">Nom du paramètre</param>
+        /// <param name="node">Noeud XML</param>
+        /// <returns><see cref="bool"/></returns>
         static bool TryParseBool(string value, out bool result, string nameAttribute, string paramName, XmlNode node)
         {
             bool parse = bool.TryParse(value, out result);
@@ -624,6 +642,15 @@ namespace MSNTools
             return parse;
         }
 
+        /// <summary>
+        /// Parse un entier.
+        /// </summary>
+        /// <param name="value">Valeur récupérée</param>
+        /// <param name="result">Valeur retournée</param>
+        /// <param name="nameAttribute">Nom de l'attribut</param>
+        /// <param name="paramName">Nom du paramètre</param>
+        /// <param name="node">Noeud XML</param>
+        /// <returns><see cref="bool"/></returns>
         static bool TryParseInt(string value, out int result, string nameAttribute, string paramName, XmlNode node)
         {
             bool parse = int.TryParse(value, out result);
@@ -632,6 +659,15 @@ namespace MSNTools
             return parse;
         }
 
+        /// <summary>
+        /// Parse une string.
+        /// </summary>
+        /// <param name="value">Valeur récupérée</param>
+        /// <param name="result">Valeur retournée</param>
+        /// <param name="nameAttribute">Nom de l'attribut</param>
+        /// <param name="paramName">Nom du paramètre</param>
+        /// <param name="node">Noeud XML</param>
+        /// <returns><see cref="bool"/></returns>
         static bool TryParseString(string value, out string result, string nameAttribute, string paramName, XmlNode node)
         {
             if (value.Length != 0)
@@ -647,6 +683,15 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Parse une liste de string.
+        /// </summary>
+        /// <param name="value">Valeur récupérée</param>
+        /// <param name="result">Valeur retournée</param>
+        /// <param name="nameAttribute">Nom de l'attribut</param>
+        /// <param name="paramName">Nom du paramètre</param>
+        /// <param name="node">Noeud XML</param>
+        /// <returns><see cref="bool"/></returns>
         static bool TryParseList(string value, out List<string> result, string nameAttribute, string paramName, XmlNode node)
         {
             if (value.Length != 0)
@@ -668,6 +713,11 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Parse la langue du serveur.
+        /// </summary>
+        /// <param name="value">Valeur récupérée</param>
+        /// <returns><see cref="MSNLocalization.Language"/></returns>
         static MSNLocalization.Language TryParseLanguage(string value)
         {
             if (value.EqualsCaseInsensitive("french") || value.EqualsCaseInsensitive("english"))
@@ -687,6 +737,15 @@ namespace MSNTools
             }
         }
 
+        /// <summary>
+        /// Parse une URL.
+        /// </summary>
+        /// <param name="value">Valeur récupérée</param>
+        /// <param name="result">Valeur retournée</param>
+        /// <param name="nameAttribute">Nom de l'attribut</param>
+        /// <param name="paramName">Nom du paramètre</param>
+        /// <param name="node">Noeud XML</param>
+        /// <returns><see cref="bool"/></returns>
         static bool TryParseUrl(string value, out string result, string nameAttribute, string paramName, XmlNode node)
         {
             if (value.StartsWith("http://") || value.StartsWith("https://"))
@@ -702,7 +761,16 @@ namespace MSNTools
             }
         }
 
-        static bool TryParseColor(string value, out Color32 color, string nameAttribute, string paramName, XmlNode node)
+        /// <summary>
+        /// Parse une couleur.
+        /// </summary>
+        /// <param name="value">Valeur récupérée</param>
+        /// <param name="result">Valeur retournée</param>
+        /// <param name="nameAttribute">Nom de l'attribut</param>
+        /// <param name="paramName">Nom du paramètre</param>
+        /// <param name="node">Noeud XML</param>
+        /// <returns><see cref="bool"/></returns>
+        static bool TryParseColor(string value, out Color32 result, string nameAttribute, string paramName, XmlNode node)
         {
             try
             {
@@ -715,13 +783,13 @@ namespace MSNTools
                     byte g = byte.Parse(rgb[1]);
                     byte b = byte.Parse(rgb[2]);
                     Color32 _color = new Color32(r, g, b, 0);
-                    color = _color;
+                    result = _color;
                     return true;
                 }
                 else
                 {
                     MSNUtils.LogWarning($"Ignoring {nameAttribute} entry in {ConfigFile} because of invalid color value for '{paramName}' attribute: {node.OuterXml}");
-                    color = Color.white;
+                    result = Color.white;
                     return false;
                 }
             }
@@ -729,7 +797,7 @@ namespace MSNTools
             {
                 MSNUtils.LogError($"Error in Config.TryParseColor: {e.Message}");
             }
-            color = Color.white;
+            result = Color.white;
             return false;
         }
     }

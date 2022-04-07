@@ -151,7 +151,6 @@
     <Compile Include="src\Functions\MSNLocalization.cs" />
     <Compile Include="src\Harmony\H_NetPackageDamageEntity.cs" />
     <Compile Include="src\PersistentData\ItemDataSerializable.cs" />
-    <Compile Include="src\PersistentData\ServerLocation.cs" />
     <Compile Include="src\Tools\AntiCheat\ChangeBlocks.cs" />
     <Compile Include="src\Tools\AntiCheat\InventoryChecks.cs" />
     <Compile Include="src\Tools\AntiCheat\PlayerChecks.cs" />

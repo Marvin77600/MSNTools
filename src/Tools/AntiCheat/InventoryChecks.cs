@@ -10,6 +10,11 @@ namespace MSNTools
         public static int Admin_Level = 1;
         public static List<string> Exceptions_Items = new List<string> { "noteDuke01", "qtest_nextTraderAdmin" };
 
+        /// <summary>
+        /// Check l'inventaire, si un item non autorisé est trouvé ban direct du joueur.
+        /// </summary>
+        /// <param name="_cInfo">Infos client du joueur</param>
+        /// <param name="_playerDataFile">Sauvegarde du profil joueur</param>
         public static void CheckInv(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
         {
             try
@@ -20,24 +25,27 @@ namespace MSNTools
                     {
                         List<ItemStack> unauthorizedItems = new List<ItemStack>();
                         InventoryType inventoryType = InventoryType.None;
-                        foreach (ItemStack item in _playerDataFile.inventory)
+                        for (int i = 0; i < _playerDataFile.inventory.Length; i++)
                         {
+                            ItemStack item = _playerDataFile.inventory[i];
                             if (!item.IsEmpty() && item.itemValue.ItemClass.CreativeMode != EnumCreativeMode.All && item.itemValue.ItemClass.CreativeMode != EnumCreativeMode.Player && !Exceptions_Items.Contains(item.itemValue.ItemClass.Name))
                             {
                                 unauthorizedItems.Add(item);
                                 inventoryType = InventoryType.Toolbelt;
                             }
                         }
-                        foreach (ItemStack item in _playerDataFile.bag)
+                        for (int i = 0; i < _playerDataFile.bag.Length; i++)
                         {
+                            ItemStack item = _playerDataFile.bag[i];
                             if (!item.IsEmpty() && item.itemValue.ItemClass.CreativeMode != EnumCreativeMode.All && item.itemValue.ItemClass.CreativeMode != EnumCreativeMode.Player && !Exceptions_Items.Contains(item.itemValue.ItemClass.Name))
                             {
                                 unauthorizedItems.Add(item);
                                 inventoryType = InventoryType.Bag;
                             }
                         }
-                        foreach (ItemValue item in _playerDataFile.equipment.GetItems())
+                        for (int i = 0; i < _playerDataFile.equipment.GetItems().Length; i++)
                         {
+                            ItemValue item = _playerDataFile.equipment.GetItems()[i];
                             if (!item.IsEmpty() && item.ItemClass.CreativeMode != EnumCreativeMode.All && item.ItemClass.CreativeMode != EnumCreativeMode.Player && !Exceptions_Items.Contains(item.ItemClass.Name))
                             {
                                 unauthorizedItems.Add(new ItemStack(item, 1));
