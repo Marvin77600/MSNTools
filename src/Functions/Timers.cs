@@ -82,7 +82,6 @@ namespace MSNTools
                 if (Bank.IsEnabled)
                 {
                     Bank.CheckGiveMoneyEveryTime();
-                    Bank.FixedMaxMoney();
                 }
             }
             if (_twoMinTick >= 120)
