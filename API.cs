@@ -47,7 +47,7 @@ namespace MSNTools
         /// <param name="_cInfo">Infos client du joueur</param>
         /// <param name="_message">Message qui apparaît sur l'écran</param>
         /// <param name="_stringBuild">?</param>
-        /// <returns></returns>
+        /// <returns><see cref="bool"/></returns>
         private bool PlayerLogin(ClientInfo _cInfo, string _message, StringBuilder _stringBuild)
         {
             try
@@ -338,7 +338,7 @@ namespace MSNTools
         /// <param name="_mainName">Qui envoi le message</param>
         /// <param name="_localizeMain">?</param>
         /// <param name="_recipientEntityIds">?</param>
-        /// <returns></returns>
+        /// <returns><see cref="bool"/></returns>
         private bool ChatMessage(ClientInfo _cInfo, EChatType _type, int _senderId, string _msg, string _mainName, bool _localizeMain, List<int> _recipientEntityIds)
         {
             try
