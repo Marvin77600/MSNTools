@@ -9,7 +9,7 @@ namespace MSNTools.ChatCommands
 {
     public class ChatCommandBloodMoonDay : ChatCommandAbstract
     {
-        public override void Execute(List<string> _params, ClientInfo _clientInfo)
+        public override string Execute(List<string> _params, ClientInfo _clientInfo)
         {
             try
             {
@@ -25,6 +25,7 @@ namespace MSNTools.ChatCommands
                     {
                         string response = MSNLocalization.Get("bloodMoonTonight", language);
                         ChatCommandsHook.ChatMessage(_clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
+                        return response;
                     }
                     else
                     {
@@ -32,11 +33,13 @@ namespace MSNTools.ChatCommands
                         {
                             string response = MSNLocalization.Get("bloodMoonTomorrow", language);
                             ChatCommandsHook.ChatMessage(_clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
+                            return response;
                         }
                         else
                         {
                             string response = MSNLocalization.Get("bloodMoonDay", language, bloodMoonFrequency - modulo, day + bloodMoonFrequency - modulo);
                             ChatCommandsHook.ChatMessage(_clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
+                            return response;
                         }
                     }
                 }
@@ -45,6 +48,7 @@ namespace MSNTools.ChatCommands
             {
                 MSNUtils.LogError("Execute " + e.Message);
             }
+            return null;
         }
 
         public override string[] GetCommands() => new string[] { "bloodmoon", "bd", "bloodday", "blood" };

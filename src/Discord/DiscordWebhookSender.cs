@@ -31,7 +31,7 @@ namespace MSNTools.Discord
             if (_cInfo != null)
             {
                 if (DiscordWebhookSender.PlayerInfosEnabled)
-                    DiscordWebhookSender.SendEmbedToWebHook(DiscordWebhookSender.EnumWebHookType.PlayerInfos, DiscordWebhookSender.PlayerConnectedColor, MSNLocalization.Get("discordPlayerSpawnedInWorld", ServerLanguage, _cInfo.playerName));
+                    DiscordWebhookSender.SendEmbedToWebHook(DiscordWebhookSender.EnumWebHookType.PlayerInfos, DiscordWebhookSender.PlayerConnectedColor, MSNLocalization.Get("discordPlayerSpawnedInWorld", ServerLanguage, _cInfo.playerName), _cInfo);
                 //if (DiscordWebhookSender.ChatEnabled)
                 //DiscordWebhookSender.SendChatMessageToWebhook(DiscordWebhookSender.EnumWebHookType.Chat, $"*{_cInfo.playerName} vient de se connecter !*");
             }
@@ -42,7 +42,7 @@ namespace MSNTools.Discord
             if (_cInfo != null)
             {
                 if (DiscordWebhookSender.PlayerInfosEnabled)
-                    DiscordWebhookSender.SendEmbedToWebHook(DiscordWebhookSender.EnumWebHookType.PlayerInfos, DiscordWebhookSender.PlayerDisconnectedColor, MSNLocalization.Get("discordPlayerDisconnected", ServerLanguage, _cInfo.playerName));
+                    DiscordWebhookSender.SendEmbedToWebHook(DiscordWebhookSender.EnumWebHookType.PlayerInfos, DiscordWebhookSender.PlayerDisconnectedColor, MSNLocalization.Get("discordPlayerDisconnected", ServerLanguage, _cInfo.playerName), _cInfo);
                 //if (DiscordWebhookSender.ChatEnabled)
                 //DiscordWebhookSender.SendChatMessageToWebhook(DiscordWebhookSender.EnumWebHookType.Chat, $"*{_cInfo.playerName} vient de se déconnecter !*");
             }
@@ -101,7 +101,7 @@ namespace MSNTools.Discord
             return url;
         }
 
-        public static void SendChatCommand(ClientInfo _cInfo, string cmd)
+        public static void SendChatCommand(ClientInfo _cInfo, string cmd, string response)
         {
             if (_cInfo != null && cmd != string.Empty)
             {
@@ -109,10 +109,22 @@ namespace MSNTools.Discord
                 DiscordWebhook wbh = new DiscordWebhook();
                 wbh.Url = GetWebHookUrl(EnumWebHookType.PlayerInfos);
                 DiscordMessage msg = new DiscordMessage();
+                string[] vs = { };
+                if (response != null)
+                    vs = response.Split('\n');
+                List<EmbedField> embedFields = new List<EmbedField>();
+                if (response != null)
+                {
+                    foreach (string v in vs)
+                    {
+                        embedFields.Add(new EmbedField() { Name = v, Value = "-" });
+                    }
+                }
                 msg.Embeds = new List<DiscordEmbed>();
                 msg.Embeds.Add(new DiscordEmbed()
                 {
                     Title = MSNLocalization.Get("discordSendChatCommandTitle", ServerLanguage, playerName, cmd),
+                    Fields = embedFields,
                     Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
                 });
                 wbh.Send(msg);
@@ -448,6 +460,28 @@ namespace MSNTools.Discord
             }
         }
 
+        public static void SendEmbedToWebHook(EnumWebHookType webHookType, Color32 color, string content, ClientInfo _cInfo)
+        {
+            DiscordWebhook wbh = new DiscordWebhook();
+            wbh.Url = GetWebHookUrl(webHookType);
+            DiscordMessage msg = new DiscordMessage();
+            msg.Embeds = new List<DiscordEmbed>();
+            string steamID = _cInfo.PlatformId.ToString().Substring(6);
+            string eosID = _cInfo.CrossplatformId.ToString().Substring(4);
+            msg.Embeds.Add(new DiscordEmbed()
+            {
+                Fields = new List<EmbedField>()
+                {
+                    new EmbedField() { Name = "Steam ID", Value = steamID, InLine = true },
+                    new EmbedField() { Name = "EOS ID", Value = eosID, InLine = true }
+                },
+                Title = $"{content}",
+                Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
+                Color = color
+            });
+            wbh.Send(msg);
+        }
+
         public static void SendEmbedToWebHook(EnumWebHookType webHookType, Color32 color, string content)
         {
             DiscordWebhook wbh = new DiscordWebhook();
@@ -462,7 +496,7 @@ namespace MSNTools.Discord
             });
             wbh.Send(msg);
         }
-        
+
         public enum EnumWebHookType
         {
             Sanction,

@@ -6,7 +6,7 @@ namespace MSNTools.ChatCommands
 {
     public class ChatCommandBank : ChatCommandAbstract
     {
-        public override void Execute(List<string> _params, ClientInfo _clientInfo)
+        public override string Execute(List<string> _params, ClientInfo _clientInfo)
         {
             try
             {
@@ -15,13 +15,14 @@ namespace MSNTools.ChatCommands
                     MSNLocalization.Language language = PersistentContainer.Instance.Players[_clientInfo.PlatformId.ToString()].Language;
                     if (!Bank.IsEnabled)
                     {
-                        return;
+                        return null;
                     }
                     if (_params.Count == 0)
                     {
                         int moneyValue = PersistentContainer.Instance.Players[_clientInfo.PlatformId.ToString()].PlayerWallet;
                         string response = MSNLocalization.Get("moneyAmount", language, moneyValue, Bank.DeviseName);
                         ChatCommandsHook.ChatMessage(_clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
+                        return response;
                     }
                 }
             }
@@ -29,6 +30,7 @@ namespace MSNTools.ChatCommands
             {
                 MSNUtils.LogError("Execute " + e.Message);
             }
+            return null;
         }
 
         public override string[] GetCommands() => new string[] { "bank" };

@@ -26,7 +26,7 @@ namespace MSNTools.ChatCommands
                             {
                                 SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"teleportplayer {entityPlayer.entityId} {string.Join(" ", location.Value)}", clientInfo);
                                 if (DiscordWebhookSender.ServerInfosEnabled)
-                                    DiscordWebhookSender.SendChatCommand(clientInfo, msg);
+                                    DiscordWebhookSender.SendChatCommand(clientInfo, msg, null);
                                 PersistentContainer.Instance.Players[clientInfo.PlatformId.ToString()].PlayerWallet -= ChatCommandTP.TPCost;
                                 PersistentContainer.DataChange = true;
                                 return true;

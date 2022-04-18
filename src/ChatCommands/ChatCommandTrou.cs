@@ -6,7 +6,7 @@ namespace MSNTools.ChatCommands
 {
     public class ChatCommandTrou : ChatCommandAbstract
     {
-        public override void Execute(List<string> _params, ClientInfo _clientInfo)
+        public override string Execute(List<string> _params, ClientInfo _clientInfo)
         {
             try
             {
@@ -29,6 +29,7 @@ namespace MSNTools.ChatCommands
                         GameManager.Instance.World.SpawnEntityInWorld(entityItem);
                         _clientInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _clientInfo.entityId));
                         GameManager.Instance.World.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                        return null;
                     }
                 }
             }
@@ -36,6 +37,7 @@ namespace MSNTools.ChatCommands
             {
                 MSNUtils.LogError("Execute " + e.Message);
             }
+            return null;
         }
 
         public override string[] GetCommands() => new string[] { "trou" };

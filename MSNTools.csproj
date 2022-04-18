@@ -109,6 +109,9 @@
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\7 Days To Die\7DaysToDie_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>D:\Jeux Steam\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API.cs" />
@@ -139,6 +142,7 @@
     <Compile Include="src\ConsoleCommands\ServerLocations.cs" />
     <Compile Include="src\ConsoleCommands\GetResetRegionFilesTime.cs" />
     <Compile Include="src\ConsoleCommands\SetResetRegionFilesTime.cs" />
+    <Compile Include="src\ConsoleCommands\VehiclesDataLivemap.cs" />
     <Compile Include="src\CustomModEvents\CustomEvents.cs" />
     <Compile Include="src\CustomModEvents\CustomModEvent.cs" />
     <Compile Include="src\CustomModEvents\CustomModEventAbs.cs" />
@@ -150,6 +154,7 @@
     <Compile Include="src\Harmony\H_EntityAlive.cs" />
     <Compile Include="src\Functions\MSNLocalization.cs" />
     <Compile Include="src\Harmony\H_NetPackageDamageEntity.cs" />
+    <Compile Include="src\Harmony\H_VehicleManager.cs" />
     <Compile Include="src\PersistentData\ItemDataSerializable.cs" />
     <Compile Include="src\Tools\AntiCheat\ChangeBlocks.cs" />
     <Compile Include="src\Tools\AntiCheat\InventoryChecks.cs" />

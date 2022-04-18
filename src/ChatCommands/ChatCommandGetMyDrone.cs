@@ -5,7 +5,7 @@ namespace MSNTools.ChatCommands
 {
     public class ChatCommandGetMyDrone : ChatCommandAbstract
     {
-        public override void Execute(List<string> _params, ClientInfo _clientInfo)
+        public override string Execute(List<string> _params, ClientInfo _clientInfo)
         {
             try
             {
@@ -32,12 +32,14 @@ namespace MSNTools.ChatCommands
                                     if (entityPlayer.Buffs.HasBuff("buffJunkDroneSupportEffect"))
                                         entityPlayer.Buffs.RemoveBuff("buffJunkDroneSupportEffect");
                                     if (entityPlayer.Party == null)
-                                        return;
-                                    for (int index = 0; index < entityPlayer.Party.MemberList.Count; ++index)
+                                        return null;
+                                    int index = 0;
+                                    while (index < entityPlayer.Party.MemberList.Count)
                                     {
                                         if (!entityPlayer || !entityPlayer.Buffs.HasBuff("buffJunkDroneSupportEffect"))
-                                            return;
+                                            return null;
                                         entityPlayer.Buffs.RemoveBuff("buffJunkDroneSupportEffect");
+                                        return null;
                                     }
                                 }
                             }
@@ -49,6 +51,7 @@ namespace MSNTools.ChatCommands
             {
                 MSNUtils.LogError("Execute " + e.Message);
             }
+            return null;
         }
 
         public override string[] GetCommands() => new string[] { "getmydrone", "gmd" };

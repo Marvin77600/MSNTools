@@ -12,11 +12,11 @@ namespace MSNTools.ChatCommands
         public static int GainPerVote = 0;
         public static string APIServerToken = "";
 
-        ClientInfo clientInfo;
-        DateTime utcNow;
-        MSNLocalization.Language language;
+        private ClientInfo clientInfo;
+        private DateTime utcNow;
+        private MSNLocalization.Language language;
 
-        public override void Execute(List<string> _params, ClientInfo _clientInfo)
+        public override string Execute(List<string> _params, ClientInfo _clientInfo)
         {
             try
             {
@@ -38,16 +38,19 @@ namespace MSNTools.ChatCommands
                     {
                         string response = MSNLocalization.Get("wait2Hours", language);
                         ChatCommandsHook.ChatMessage(_clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
+                        return response;
                     }
+                    return null;
                 }
             }
             catch (Exception e)
             {
                 MSNUtils.LogError("Execute " + e.Message);
             }
+            return null;
         }
 
-        void Client_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+        private void Client_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
             JsonData jsonData = JsonMapper.ToObject(e.Result);
             if (HasVoted(jsonData[2].ToString()))
@@ -66,7 +69,7 @@ namespace MSNTools.ChatCommands
             }
         }
 
-        bool HasVoted(string result)
+        private bool HasVoted(string result)
         {
             if (result != null)
             {

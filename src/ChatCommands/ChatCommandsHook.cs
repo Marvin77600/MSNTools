@@ -98,8 +98,7 @@ namespace MSNTools.ChatCommands
                             str += s + " ";
                         str.TrimEnd(' ');
                         if (DiscordWebhookSender.ServerInfosEnabled)
-                            DiscordWebhookSender.SendChatCommand(_clientInfo, str);
-                        command.Execute(stringList.GetRange(1, stringList.Count - 1), _clientInfo);
+                            DiscordWebhookSender.SendChatCommand(_clientInfo, str, command.Execute(stringList.GetRange(1, stringList.Count - 1), _clientInfo));
                     }
                     catch (Exception ex)
                     {

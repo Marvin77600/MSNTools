@@ -6,7 +6,7 @@ namespace MSNTools.ChatCommands
 {
     public class ChatCommandTransfert : ChatCommandAbstract
     {
-        public override void Execute(List<string> _params, ClientInfo _clientInfo)
+        public override string Execute(List<string> _params, ClientInfo _clientInfo)
         {
             try
             {
@@ -47,6 +47,7 @@ namespace MSNTools.ChatCommands
                                 PersistentContainer.Instance.Players[_clientInfo.PlatformId.ToString()].PlayerWallet -= newAmount;
                                 Bank.GiveMoney(targetClientInfo, newAmount);
                                 PersistentContainer.DataChange = true;
+                                return null;
                             }
                         }
                     }
@@ -56,6 +57,7 @@ namespace MSNTools.ChatCommands
             {
                 MSNUtils.LogError("Execute " + e.Message);
             }
+            return null;
         }
 
         public override string[] GetCommands() => new string[] { "transfert" };

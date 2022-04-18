@@ -6,6 +6,6 @@ namespace MSNTools.ChatCommands
     {
         string[] GetCommands();
 
-        void Execute(List<string> _params, ClientInfo _clientInfo);
+        string Execute(List<string> _params, ClientInfo _clientInfo);
     }
 }
