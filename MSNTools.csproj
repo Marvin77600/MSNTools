@@ -137,12 +137,14 @@
     <Compile Include="src\ConsoleCommands\PlaceBlock.cs" />
     <Compile Include="src\ConsoleCommands\DiscordBot.cs" />
     <Compile Include="src\ConsoleCommands\Donator.cs" />
+    <Compile Include="src\ConsoleCommands\ReadResetRegions.cs" />
     <Compile Include="src\ConsoleCommands\ResetRegions.cs" />
     <Compile Include="src\ConsoleCommands\ResetRegionsDataLivemap.cs" />
     <Compile Include="src\ConsoleCommands\ServerLocations.cs" />
     <Compile Include="src\ConsoleCommands\GetResetRegionFilesTime.cs" />
     <Compile Include="src\ConsoleCommands\SetResetRegionFilesTime.cs" />
     <Compile Include="src\ConsoleCommands\VehiclesDataLivemap.cs" />
+    <Compile Include="src\ConsoleCommands\WriteResetRegions.cs" />
     <Compile Include="src\CustomModEvents\CustomEvents.cs" />
     <Compile Include="src\CustomModEvents\CustomModEvent.cs" />
     <Compile Include="src\CustomModEvents\CustomModEventAbs.cs" />
@@ -174,6 +176,7 @@
     <Compile Include="src\PersistentData\PersistentPlayers.cs" />
     <Compile Include="src\PersistentOperations\PersistentOperations.cs" />
     <Compile Include="src\Tools\Bank\Bank.cs" />
+    <Compile Include="src\Tools\ClearVehicles\ClearVehicles.cs" />
     <Compile Include="src\Tools\DiscordBot\DiscordBot.cs" />
     <Compile Include="src\Tools\PlayerInvulnerabilityAtTrader\PlayerInvulnerabilityAtTrader.cs" />
     <Compile Include="src\Tools\Zones\ResetRegions.cs" />

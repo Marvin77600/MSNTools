@@ -2,6 +2,7 @@
 using MSNTools.ChatCommands;
 using MSNTools.Discord;
 using MSNTools.PersistentData;
+using MSNTools.Tools;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -13,6 +14,10 @@ namespace MSNTools
     {
         public static Mod Mod;
 
+        /// <summary>
+        /// Initialisation du mod.
+        /// </summary>
+        /// <param name="_modInstance">?</param>
         public void InitMod(Mod _modInstance)
         {
             try
@@ -32,8 +37,7 @@ namespace MSNTools
                 CustomModEvents.EndBloodMoon.RegisterHandler(EndBloodMoon);
                 CustomModEvents.PlayerKillPlayer.RegisterHandler(PlayerKillPlayer);
                 MSNUtils.Log($"Mod chargé");
-                var harmony = new HarmonyX(GetType().ToString());
-                harmony.PatchAll(Assembly.GetExecutingAssembly());
+                HarmonyX.CreateAndPatchAll(Assembly.GetExecutingAssembly());
             }
             catch (Exception e)
             {
@@ -151,10 +155,7 @@ namespace MSNTools
                     //{
                     //    HighPingKicker.Exec(_cInfo);
                     //}
-                    if (InventoryChecks.IsEnabled)
-                    {
-                        InventoryChecks.CheckInv(_cInfo, _playerDataFile);
-                    }
+                    if (InventoryChecks.IsEnabled) InventoryChecks.CheckInv(_cInfo, _playerDataFile);
                 }
             }
             catch (Exception e)
@@ -180,15 +181,15 @@ namespace MSNTools
                 MSNUtils.LogError($"Error in API.BlockChange: {e.Message}");
             }
         }
-         /// <summary>
-         /// Méthode s'exécutant au démarrage d'une bloodmoon.
-         /// </summary>
+
+        /// <summary>
+        /// Méthode s'exécutant au démarrage d'une bloodmoon.
+        /// </summary>
         private void StartBloodMoon()
         {
             try
             {
-                if (BloodMoonAlerts.IsEnabled)
-                    DiscordWebhookSender.SendBloodMoonStart();
+                if (BloodMoonAlerts.IsEnabled) DiscordWebhookSender.SendBloodMoonStart();
             }
             catch (Exception e)
             {
@@ -266,6 +267,7 @@ namespace MSNTools
             {
                 Timers.TimerStop();
                 ModEventsDiscordBehaviour.GameShutdown();
+                if (ClearVehicles.IsEnabled) ClearVehicles.Start();
                 PersistentContainer.Instance.Save();
             }
             catch (Exception e)
@@ -286,19 +288,26 @@ namespace MSNTools
             {
                 if (_cInfo != null && _cInfo.PlatformId != null)
                 {
+                    string platformId = _cInfo.PlatformId.ToString();
                     if (_respawnReason.Equals(RespawnType.JoinMultiplayer))
                     {
                         ModEventsDiscordBehaviour.PlayerSpawnedInWorld(_cInfo);
                         PersistentContainer.DataChange = true;
+                        if (PersistentContainer.Instance.Players[platformId].TPPositions.Count > ChatCommandTP.TPMaxCount)
+                        {
+                            MSNUtils.LogWarning($"Reset des TP persos pour {_cInfo.playerName}");
+                            PersistentContainer.Instance.Players[platformId].TPPositions = new Dictionary<string, string>();
+                            PersistentContainer.DataChange = true;
+                        }
                     }
                     else if (_respawnReason.Equals(RespawnType.EnterMultiplayer))
                     {
-                        PersistentContainer.Instance.Players[_cInfo.PlatformId.ToString()].PlayerName = _cInfo.playerName;
-                        PersistentContainer.Instance.Players[_cInfo.PlatformId.ToString()].Language = MSNLocalization.Language.French;
-                        PersistentContainer.Instance.Players[_cInfo.PlatformId.ToString()].PlayerWallet = 0;
-                        PersistentContainer.Instance.Players[_cInfo.PlatformId.ToString()].Time = DateTime.UtcNow;
-                        PersistentContainer.Instance.Players[_cInfo.PlatformId.ToString()].LastVote = new DateTime();
-                        PersistentContainer.Instance.Players[_cInfo.PlatformId.ToString()].TPPositions = new Dictionary<string, string>();
+                        PersistentContainer.Instance.Players[platformId].PlayerName = _cInfo.playerName;
+                        PersistentContainer.Instance.Players[platformId].Language = MSNLocalization.Language.French;
+                        PersistentContainer.Instance.Players[platformId].PlayerWallet = 0;
+                        PersistentContainer.Instance.Players[platformId].Time = DateTime.UtcNow;
+                        PersistentContainer.Instance.Players[platformId].LastVote = new DateTime();
+                        PersistentContainer.Instance.Players[platformId].TPPositions = new Dictionary<string, string>();
                         PersistentContainer.DataChange = true;
                     }
                 }
@@ -318,8 +327,7 @@ namespace MSNTools
         {
             try
             {
-                if (!_bShutdown)
-                    ModEventsDiscordBehaviour.PlayerDisconnected(_cInfo);
+                if (!_bShutdown) ModEventsDiscordBehaviour.PlayerDisconnected(_cInfo);
             }
             catch (Exception e)
             {
@@ -346,16 +354,14 @@ namespace MSNTools
                 if (_senderId == -1)
                     return true;
 
-                if (ChatCommandTPToServerLocations.Exec(_cInfo, _msg))
-                    return false;
+                if (ChatCommandTPToServerLocations.Exec(_cInfo, _msg)) return false;
                 
                 if (_msg.StartsWith(ChatCommandsHook.ChatCommandsPrefix) && ChatCommandsHook.ChatCommandsEnabled)
                 {
                     ChatCommandsHook.Exec(_cInfo, _msg);
                     return false;
                 }
-                else
-                    ModEventsDiscordBehaviour.ChatMessage(_cInfo, _type, _msg);
+                else ModEventsDiscordBehaviour.ChatMessage(_cInfo, _type, _msg);
                 return true;
             }
             catch (Exception e)

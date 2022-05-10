@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using XMLData.Item;
 
-namespace MSNTools.src.Harmony
+namespace MSNTools.Harmony
 {
     public class H_NetPackageDamageEntity
     {

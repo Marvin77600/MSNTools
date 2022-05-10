@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using MSNTools.ChatCommands;
 using MSNTools.Discord;
 using MSNTools.PersistentData;
+using MSNTools.Tools;
 using UnityEngine;
 
 namespace MSNTools
@@ -46,9 +47,10 @@ namespace MSNTools
                     {"Alerts_Webhook", new List<string> { "Enable", "Webhook_Url", "Color" } },
                     {"Anti_Collapse", new List<string> { "Enable", "Min_Entities_Detected"} },
                     {"Bank", new List<string> { "Enable", "Gain_Every_Hours", "Donator_Gain_Every_Hours", "Hour", "Devise_Name", "Max"} },
-                    {"BloodMoon_Alerts_Webhook", new List<string> { "Enable", "Webhook_Url", "Hour"} },
+                    {"BloodMoon_Alerts_Webhook", new List<string> { "Enable", "Webhook_Url", "Hour", "Color" } },
                     {"Chat_Commands", new List<string> { "Enable", "Prefix"} },
                     {"Chat_Webhook", new List<string> { "Enable", "Webhook_Url", "Type" } },
+                    {"Clear_Vehicles_On_Restart", new List<string> { "Enable" } },
                     {"Godmode_Detector", new List<string> { "Enable", "Admin_Level" } },
                     {"High_Ping_Kicker", new List<string> { "Enable", "Max_Ping", "Flags" } },
                     {"Inventory_Check", new List<string> { "Enable", "Admin_Level", "Check_Storage", "Exceptions_Items" } },
@@ -275,6 +277,11 @@ namespace MSNTools
                                                 if (!TryParseUrl(attribute, out DiscordWebhookSender.BloodMoonWebHookUrl, nameAttribute, paramName, subChild))
                                                     continue;
                                             }
+                                            else if (paramName == "Color")
+                                            {
+                                                if (!TryParseColor(attribute, out DiscordWebhookSender.BloodMoonAlertsColor, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
                                             else if (paramName == "Hour")
                                             {
                                                 if (!TryParseInt(attribute, out BloodMoonAlerts.Hour, nameAttribute, paramName, subChild))
@@ -307,6 +314,13 @@ namespace MSNTools
                                             else if (paramName == "Prefix")
                                             {
                                                 if (!TryParseString(attribute, out ChatCommandsHook.ChatCommandsPrefix, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            break;
+                                        case "Clear_Vehicles_On_Restart":
+                                            if (paramName == "Enable")
+                                            {
+                                                if (!TryParseBool(attribute, out ClearVehicles.IsEnabled, nameAttribute, paramName, subChild))
                                                     continue;
                                             }
                                             break;
@@ -536,6 +550,7 @@ namespace MSNTools
                 sw.WriteLine($"        <Tool Name=\"BloodMoon_Alerts_Webhook\" Webhook_Url=\"{DiscordWebhookSender.BloodMoonWebHookUrl}\" Enable=\"{BloodMoonAlerts.IsEnabled}\" Hour=\"{BloodMoonAlerts.Hour}\" />");
                 sw.WriteLine($"        <Tool Name=\"Chat_Commands\" Enable=\"{ChatCommandsHook.ChatCommandsEnabled}\" Prefix=\"{ChatCommandsHook.ChatCommandsPrefix}\" />");
                 sw.WriteLine($"        <Tool Name=\"Chat_Webhook\" Enable=\"{DiscordWebhookSender.ChatEnabled}\" Webhook_Url=\"{DiscordWebhookSender.ChatWebHookUrl}\" Type=\"{DiscordWebhookSender.ChatType}\" />");
+                sw.WriteLine($"        <Tool Name=\"Clear_Vehicles_On_Start\" Enable=\"{ClearVehicles.IsEnabled}\" />");
                 sw.WriteLine($"        <Tool Name=\"Godmode_Detector\" Enable=\"{PlayerChecks.GodEnabled}\" Admin_Level=\"{PlayerChecks.God_Admin_Level}\" />");
                 //sw.WriteLine($"        <Tool Name=\"High_Ping_Kicker\" Enable=\"{0}\" Max_Ping=\"{1}\" Flags=\"{2}\" />");
                 sw.WriteLine($"        <Tool Name=\"Inventory_Check\" Enable=\"{InventoryChecks.IsEnabled}\" Admin_Level=\"{InventoryChecks.Admin_Level}\" Check_Storage=\"{InventoryChecks.Check_Storage}\" Exceptions_Items=\"{InventoryChecks.Exceptions_Items}\" />");

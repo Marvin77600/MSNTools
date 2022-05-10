@@ -80,7 +80,7 @@ namespace MSNTools.Discord
 
         public static bool ChatEnabled, SanctionsEnabled, ServerInfosEnabled, PlayerInfosEnabled, AlertsEnabled, BloodMoonAlertsEnabled = false;
         public static string ChatWebHookUrl, SanctionsWebHookUrl, ServerInfosWebHookUrl, PlayerInfosWebHookUrl, AlertsWekHookUrl, BloodMoonWebHookUrl, FooterImageUrl, BloodMoonAlertImageUrl = string.Empty;
-        public static Color32 PlayerConnectedColor, PlayerDisconnectedColor, SanctionsColor, AlertsColor, ServerOnlineColor, ServerOfflineColor = Color.black;
+        public static Color32 PlayerConnectedColor, BloodMoonAlertsColor, PlayerDisconnectedColor, SanctionsColor, AlertsColor, ServerOnlineColor, ServerOfflineColor = Color.black;
         public static EnumChatType ChatType = new EnumChatType();
 
         private static string GetWebHookUrl(EnumWebHookType webHookType)
@@ -145,7 +145,7 @@ namespace MSNTools.Discord
                     Url = BloodMoonAlertImageUrl
                 },
                 Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
-                Color = Color.red
+                Color = BloodMoonAlertsColor
             });
             wbh.Send(msg);
         }
@@ -164,7 +164,7 @@ namespace MSNTools.Discord
                     Url = BloodMoonAlertImageUrl
                 },
                 Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
-                Color = Color.red
+                Color = BloodMoonAlertsColor
             });
             wbh.Send(msg);
         }
@@ -183,7 +183,7 @@ namespace MSNTools.Discord
                     Url = BloodMoonAlertImageUrl
                 },
                 Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
-                Color = Color.red
+                Color = BloodMoonAlertsColor
             });
             wbh.Send(msg);
         }

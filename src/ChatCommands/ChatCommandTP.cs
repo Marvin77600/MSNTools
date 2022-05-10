@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 
 namespace MSNTools.ChatCommands
 {
@@ -102,7 +101,12 @@ namespace MSNTools.ChatCommands
                                     }
                                     else
                                     {
-                                        SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"teleportplayer {entityPlayer.entityId} {string.Join(" ", vs.ToArray())}", _clientInfo);
+                                        if (Bank.HasEnoughMoney(_clientInfo, TPCost))
+                                        {
+                                            PersistentContainer.Instance.Players[_clientInfo.PlatformId.ToString()].PlayerWallet -= TPCost;
+                                            PersistentContainer.DataChange = true;
+                                            SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteSync($"teleportplayer {entityPlayer.entityId} {string.Join(" ", vs.ToArray())}", _clientInfo);
+                                        }
                                     }
                                 }
                             }
