@@ -2,7 +2,6 @@
 using AllocsFixes.NetConnections.Servers.Web.Handlers;
 using HarmonyLib;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace MSNTools.Harmony

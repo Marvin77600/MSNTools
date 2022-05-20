@@ -165,6 +165,7 @@
     <Compile Include="src\Harmony\H_EntityAlive.cs" />
     <Compile Include="src\Functions\MSNLocalization.cs" />
     <Compile Include="src\Harmony\H_NetPackageDamageEntity.cs" />
+    <Compile Include="src\Harmony\H_RegionFile.cs" />
     <Compile Include="src\Harmony\H_VehicleManager.cs" />
     <Compile Include="src\PersistentData\ItemDataSerializable.cs" />
     <Compile Include="src\Tools\AntiCheat\ChangeBlocks.cs" />

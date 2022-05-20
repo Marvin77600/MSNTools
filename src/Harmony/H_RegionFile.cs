@@ -31,6 +31,7 @@ namespace MSNTools.Harmony
                         _fileStream.Close();
                         File.Delete(str);
                         MSNUtils.LogError($"Corrupt region file found! Region has been removed: r.{rX}.{rZ}.7rg");
+                        Discord.DiscordWebhookSender.SendRegionCorrupt($"{rX}.{rZ}");
                         MSNUtils.Log($"Creating new RegionFileV2: r.{rX}.{rZ}.7rg");
                         File.Create(str).Close();
                         __result = new RegionFileV2(str, rX, rZ, null, 1);

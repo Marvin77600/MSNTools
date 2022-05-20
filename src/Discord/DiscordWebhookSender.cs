@@ -343,6 +343,21 @@ namespace MSNTools.Discord
             }
         }
 
+        public static void SendRegionCorrupt(string region)
+        {
+            DiscordWebhook wbh = new DiscordWebhook();
+            wbh.Url = GetWebHookUrl(EnumWebHookType.Alerts);
+            DiscordMessage msg = new DiscordMessage();
+            msg.Embeds = new List<DiscordEmbed>();
+            msg.Embeds.Add(new DiscordEmbed()
+            {
+                Title = MSNLocalization.Get("regionCorruptKey", ServerLanguage, region),
+                Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
+                Color = Color.magenta
+            });
+            wbh.Send(msg);
+        }
+
         public static void SendNotifShop(ClientInfo clientInfo, Shop.Item shopItem)
         {
             if (clientInfo != null)
