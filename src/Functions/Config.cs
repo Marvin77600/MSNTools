@@ -58,6 +58,7 @@ namespace MSNTools
                     {"Player_Invulnerability_At_Trader", new List<string> { "Enable" } },
                     {"Reset_Regions", new List<string> { "Enable", "Day", "Hour", "Buff_Reset_Zones" } },
                     {"Sanctions_Webhook", new List<string> { "Enable", "Webhook_Url", "Color" } },
+                    {"Shop", new List<string> { "Enable", "Color" } },
                     {"Server_Infos_Webhook", new List<string> { "Enable", "Webhook_Url", "Connected_Color", "Disconnected_Color" } },
                     {"Spectator_Detector", new List<string> { "Enable", "Admin_Level" } },
                     {"TP_Command", new List<string> { "Enable", "TP_Cost", "TP_Max_Count" } },
@@ -443,6 +444,20 @@ namespace MSNTools
                                                     continue;
                                             }
                                             break;
+                                        case "Shop":
+                                            if (paramName == "Enable")
+                                            {
+                                                if (!TryParseBool(attribute, out Shop.IsEnabled, nameAttribute, paramName, subChild))
+                                                    continue;
+                                                if (Shop.IsEnabled) TrySetupShopList(subChild);
+                                                else Shop.ShopItems = new List<Shop.Item>();
+                                            }
+                                            else if (paramName == "Color")
+                                            {
+                                                if (!TryParseColor(attribute, out DiscordWebhookSender.ShopNotifColor, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            break;
                                         case "Server_Infos_Webhook":
                                             if (paramName == "Enable")
                                             {
@@ -547,7 +562,7 @@ namespace MSNTools
                 sw.WriteLine($"        <Tool Name=\"Alerts_Webhook\" Enable=\"{DiscordWebhookSender.AlertsEnabled}\" Webhook_Url=\"{DiscordWebhookSender.AlertsWekHookUrl}\" Color=\"{DiscordWebhookSender.AlertsColor.r},{DiscordWebhookSender.AlertsColor.g},{DiscordWebhookSender.AlertsColor.b}\" />");
                 sw.WriteLine($"        <Tool Name=\"Anti_Collapse\" Enable=\"{AntiCollapse.IsEnabled}\" Min_Entities_Detected=\"{AntiCollapse.MinEntitiesDetected}\" />");
                 sw.WriteLine($"        <Tool Name=\"Bank\" Enable=\"{Bank.IsEnabled}\" Hours=\"{Bank.Hours}\" Donator_Gain_Every_Hours=\"{Bank.DonatorGainEveryHours}\" Gain_Every_Hours=\"{Bank.GainEveryHours}\" Devise_Name=\"{Bank.DeviseName}\" Max=\"{Bank.Max}\" />");
-                sw.WriteLine($"        <Tool Name=\"BloodMoon_Alerts_Webhook\" Webhook_Url=\"{DiscordWebhookSender.BloodMoonWebHookUrl}\" Enable=\"{BloodMoonAlerts.IsEnabled}\" Hour=\"{BloodMoonAlerts.Hour}\" />");
+                sw.WriteLine($"        <Tool Name=\"BloodMoon_Alerts_Webhook\" Webhook_Url=\"{DiscordWebhookSender.BloodMoonWebHookUrl}\" Enable=\"{BloodMoonAlerts.IsEnabled}\" Hour=\"{BloodMoonAlerts.Hour}\" Color=\"{DiscordWebhookSender.BloodMoonAlertsColor}\" />");
                 sw.WriteLine($"        <Tool Name=\"Chat_Commands\" Enable=\"{ChatCommandsHook.ChatCommandsEnabled}\" Prefix=\"{ChatCommandsHook.ChatCommandsPrefix}\" />");
                 sw.WriteLine($"        <Tool Name=\"Chat_Webhook\" Enable=\"{DiscordWebhookSender.ChatEnabled}\" Webhook_Url=\"{DiscordWebhookSender.ChatWebHookUrl}\" Type=\"{DiscordWebhookSender.ChatType}\" />");
                 sw.WriteLine($"        <Tool Name=\"Clear_Vehicles_On_Start\" Enable=\"{ClearVehicles.IsEnabled}\" />");
@@ -559,6 +574,7 @@ namespace MSNTools
                 sw.WriteLine($"        <Tool Name=\"Reset_Regions\" Enable=\"{ResetRegions.IsEnabled}\" Day=\"{ResetRegions.Day}\" Hour=\"{ResetRegions.Hour}\" Buff_Reset_Zones=\"{Zones.BuffResetZone}\" />");
                 sw.WriteLine($"        <Tool Name=\"Server_Infos_Webhook\" Enable=\"{DiscordWebhookSender.ServerInfosEnabled}\" Webhook_Url=\"{DiscordWebhookSender.ServerInfosWebHookUrl}\" Connected_Color=\"{DiscordWebhookSender.ServerOnlineColor.r},{DiscordWebhookSender.ServerOnlineColor.g},{DiscordWebhookSender.ServerOnlineColor.b}\" Disconnected_Color=\"{DiscordWebhookSender.ServerOfflineColor.r},{DiscordWebhookSender.ServerOfflineColor.g},{DiscordWebhookSender.ServerOfflineColor.b}\" />");
                 sw.WriteLine($"        <Tool Name=\"Sanctions_Webhook\" Enable=\"{DiscordWebhookSender.SanctionsEnabled}\" Webhook_Url=\"{DiscordWebhookSender.SanctionsWebHookUrl}\" Color=\"{DiscordWebhookSender.SanctionsColor.r},{DiscordWebhookSender.SanctionsColor.g},{DiscordWebhookSender.SanctionsColor.b}\"/>");
+                sw.WriteLine($"        <Tool Name=\"Shop\" Enable=\"{Shop.IsEnabled}\" Color=\"{DiscordWebhookSender.ShopNotifColor}\" />");
                 sw.WriteLine($"        <Tool Name=\"Spectator_Detector\" Enable=\"{PlayerChecks.SpectatorEnabled}\" Admin_Level=\"{PlayerChecks.Spectator_Admin_Level}\" />");
                 sw.WriteLine($"        <Tool Name=\"TP_Command\" Enable=\"{ChatCommandTP.IsEnabled}\" TP_Cost=\"{ChatCommandTP.TPCost}\" TP_Max_Count=\"{ChatCommandTP.TPMaxCount}\" />");
                 sw.WriteLine($"        <Tool Name=\"Vote_Command\" Enable=\"{ChatCommandVote.IsEnabled}\" Gain_Per_Vote=\"{ChatCommandVote.GainPerVote}\" API_Server_Token=\"{ChatCommandVote.APIServerToken}\" />");
@@ -643,6 +659,28 @@ namespace MSNTools
                 MSNUtils.LogError($"Error in Config.UpgradeXml: {e.Message}");
             }
             FileWatcher.EnableRaisingEvents = true;
+        }
+
+        /// <summary>
+        /// Construit la liste <see cref="Shop.ShopItems"/> à partir du fichier de config.
+        /// </summary>
+        /// <param name="node">Noeud XML</param>
+        static void TrySetupShopList(XmlNode node)
+        {
+            int index = 0;
+            Shop.ShopItems = new List<Shop.Item>();
+            foreach (XmlNode node1 in node)
+            {
+                string itemName = node1.Attributes["ItemName"].Value;
+                string description = node1.Attributes["Description"].Value;
+                int count = StringParsers.ParseSInt32(node1.Attributes["Count"].Value);
+                int quality = StringParsers.ParseSInt32(node1.Attributes["Quality"].Value);
+                int price = StringParsers.ParseSInt32(node1.Attributes["Price"].Value);
+
+                Shop.ShopItems.Add(new Shop.Item(itemName, description, count, quality, price, index));
+
+                index++;
+            }
         }
 
         /// <summary>

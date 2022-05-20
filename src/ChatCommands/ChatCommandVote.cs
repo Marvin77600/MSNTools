@@ -12,6 +12,7 @@ namespace MSNTools.ChatCommands
         public static int GainPerVote = 0;
         public static string APIServerToken = "";
 
+        private string response1;
         private ClientInfo clientInfo;
         private DateTime utcNow;
         private MSNLocalization.Language language;
@@ -33,6 +34,7 @@ namespace MSNTools.ChatCommands
                         string playerName = _clientInfo.playerName;
                         client.DownloadStringAsync(new Uri($"https://api.top-serveurs.net/v1/votes/claim-username?server_token={APIServerToken}&playername={playerName}"));
                         client.DownloadStringCompleted += Client_DownloadStringCompleted;
+                        return response1;
                     }
                     else
                     {
@@ -40,7 +42,6 @@ namespace MSNTools.ChatCommands
                         ChatCommandsHook.ChatMessage(_clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
                         return response;
                     }
-                    return null;
                 }
             }
             catch (Exception e)
@@ -61,11 +62,13 @@ namespace MSNTools.ChatCommands
 
                 string response = MSNLocalization.Get("voteClaimed", language, GainPerVote, Bank.DeviseName);
                 ChatCommandsHook.ChatMessage(clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
+                response1 = response;
             }
             else
             {
                 string response = MSNLocalization.Get("voteNotClaim", language);
                 ChatCommandsHook.ChatMessage(clientInfo, response, -1, $"{Config.Chat_Response_Color}{Config.Server_Response_Name}[-]", EChatType.Whisper, null);
+                response1 = response;
             }
         }
 

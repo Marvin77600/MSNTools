@@ -51,7 +51,6 @@ namespace MSNTools
                                 PersistentContainer.Instance.TimeRegionFiles = new DateTime(nextResetRegionFilesTime.Ticks).AddDays(Day);
                                 PersistentContainer.DataChange = true;
                                 MSNUtils.Log($"Next Reset Regions : {PersistentContainer.Instance.TimeRegionFiles}");
-                                PersistentContainer.Instance.Save();
                                 DiscordWebhookSender.SendResetRegionMessage();
                             }
                         }

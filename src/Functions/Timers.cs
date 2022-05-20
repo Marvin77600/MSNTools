@@ -1,6 +1,4 @@
 ﻿using MSNTools.PersistentData;
-using MSNTools.ChatCommands;
-using System.Collections.Generic;
 using System.Timers;
 
 namespace MSNTools

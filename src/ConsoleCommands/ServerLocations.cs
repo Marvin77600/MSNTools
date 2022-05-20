@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MSNTools.ConsoleCommands
 {
-    internal class ServerLocations : MSNConsoleCmdAbstract
+    public class ServerLocations : MSNConsoleCmdAbstract
     {
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

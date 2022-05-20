@@ -128,6 +128,7 @@
     <Compile Include="src\ChatCommands\IChatCommand.cs" />
     <Compile Include="src\ChatCommands\ChatCommandTrou.cs" />
     <Compile Include="src\ConsoleCommands\Bank.cs" />
+    <Compile Include="src\ConsoleCommands\GetPlayerMoney.cs" />
     <Compile Include="src\ConsoleCommands\ItemException.cs" />
     <Compile Include="src\ConsoleCommands\CheckItemCreativeMode.cs" />
     <Compile Include="src\ConsoleCommands\GetPlayerData.cs" />
@@ -149,6 +150,14 @@
     <Compile Include="src\CustomModEvents\CustomModEvent.cs" />
     <Compile Include="src\CustomModEvents\CustomModEventAbs.cs" />
     <Compile Include="src\Discord\BloodMoonAlerts.cs" />
+    <Compile Include="src\Handlers\AddResetRegion.cs" />
+    <Compile Include="src\Handlers\GetBankDevise.cs" />
+    <Compile Include="src\Handlers\GetPlayerMoney.cs" />
+    <Compile Include="src\Handlers\GetResetRegions.cs" />
+    <Compile Include="src\Handlers\GetShopItems.cs" />
+    <Compile Include="src\Handlers\PlayerBuyItem.cs" />
+    <Compile Include="src\Handlers\RemoveResetRegion.cs" />
+    <Compile Include="src\Harmony\H_ApiHandler.cs" />
     <Compile Include="src\Harmony\H_GameManager.cs" />
     <Compile Include="src\Harmony\H_GetLandClaims.cs" />
     <Compile Include="src\Harmony\H_AIDirectorBloodMoonComponent.cs" />
@@ -179,6 +188,7 @@
     <Compile Include="src\Tools\ClearVehicles\ClearVehicles.cs" />
     <Compile Include="src\Tools\DiscordBot\DiscordBot.cs" />
     <Compile Include="src\Tools\PlayerInvulnerabilityAtTrader\PlayerInvulnerabilityAtTrader.cs" />
+    <Compile Include="src\Tools\Shop\Shop.cs" />
     <Compile Include="src\Tools\Zones\ResetRegions.cs" />
     <Compile Include="src\Tools\Zones\Zones.cs" />
     <Compile Include="src\Utils\Extensions.cs" />

@@ -80,7 +80,7 @@ namespace MSNTools.Discord
 
         public static bool ChatEnabled, SanctionsEnabled, ServerInfosEnabled, PlayerInfosEnabled, AlertsEnabled, BloodMoonAlertsEnabled = false;
         public static string ChatWebHookUrl, SanctionsWebHookUrl, ServerInfosWebHookUrl, PlayerInfosWebHookUrl, AlertsWekHookUrl, BloodMoonWebHookUrl, FooterImageUrl, BloodMoonAlertImageUrl = string.Empty;
-        public static Color32 PlayerConnectedColor, BloodMoonAlertsColor, PlayerDisconnectedColor, SanctionsColor, AlertsColor, ServerOnlineColor, ServerOfflineColor = Color.black;
+        public static Color32 PlayerConnectedColor, BloodMoonAlertsColor, PlayerDisconnectedColor, SanctionsColor, AlertsColor, ServerOnlineColor, ServerOfflineColor, ShopNotifColor = Color.black;
         public static EnumChatType ChatType = new EnumChatType();
 
         private static string GetWebHookUrl(EnumWebHookType webHookType)
@@ -338,6 +338,29 @@ namespace MSNTools.Discord
                         new EmbedField() { Name = "Position", Value = $"{playerPos}\n", InLine = false }
                     },
                     Color = SanctionsColor
+                });
+                wbh.Send(msg);
+            }
+        }
+
+        public static void SendNotifShop(ClientInfo clientInfo, Shop.Item shopItem)
+        {
+            if (clientInfo != null)
+            {
+                int count = shopItem.Count;
+                int price = shopItem.Price;
+                string itemName = shopItem.ItemName;
+
+                DiscordWebhook wbh = new DiscordWebhook();
+                wbh.Url = GetWebHookUrl(EnumWebHookType.ServerInfos);
+                DiscordMessage msg = new DiscordMessage();
+                msg.Embeds = new List<DiscordEmbed>();
+
+                msg.Embeds.Add(new DiscordEmbed()
+                {
+                    Title = MSNLocalization.Get("shopKey", ServerLanguage, clientInfo.playerName, count, Localization.Get(itemName), price, Bank.DeviseName),
+                    Footer = new EmbedFooter() { Text = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss"), IconUrl = FooterImageUrl },
+                    Color = ShopNotifColor
                 });
                 wbh.Send(msg);
             }
