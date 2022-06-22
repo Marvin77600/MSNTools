@@ -18,7 +18,7 @@ namespace MSNTools.ConsoleCommands
                 else
                 {
                     string steamID = _params[0];
-                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output($"{PersistentContainer.Instance.Players[steamID].PlayerWallet};{BankChatCommand.DeviseName}");
+                    SingletonMonoBehaviour<SdtdConsole>.Instance.Output($"{PersistentContainer.Instance.Players[steamID].PlayerWallet} {BankChatCommand.DeviseName}");
                 }
             }
             catch (Exception e)

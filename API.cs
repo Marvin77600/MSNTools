@@ -257,7 +257,7 @@ namespace MSNTools
                 MSNUtils.LogError($"Error in API.GameStartDone: {e.Message}");
             }
         }
-
+        
         /// <summary>
         /// Méthode s'exécutant lorsque le serveur s'éteint.
         /// </summary>

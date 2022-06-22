@@ -19,7 +19,7 @@ namespace MSNTools.Harmony
                 {
                     if (!type.IsAbstract && type.IsSubclassOf(typeof(WebAPI)))
                     {
-                        MSNUtils.LogWarning($"Add WebAPI handler : " + type.Name);
+                        MSNUtils.Log($"Add WebAPI handler : " + type.Name);
                         ConstructorInfo constructor = type.GetConstructor(new Type[0]);
                         if (constructor != null)
                             addApi.Invoke(__instance, new object[] { constructor.Invoke(new object[0]) });

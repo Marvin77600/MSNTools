@@ -19,6 +19,7 @@ namespace MSNTools
         {
             try
             {
+                if (!IsEnabled) return;
                 List<string> regions = PersistentContainer.Instance.RegionsReset;
                 DateTime nextResetRegionFilesTime = PersistentContainer.Instance.TimeRegionFiles;
                 if (DateTime.Now >= nextResetRegionFilesTime)

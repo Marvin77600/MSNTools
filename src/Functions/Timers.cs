@@ -44,6 +44,8 @@ namespace MSNTools
 
         private static void Exec()
         {
+            if (KickBloodTower.IsEnabled)
+                KickBloodTower.Exec();
             if (PlayerChecks.GodEnabled || PlayerChecks.SpectatorEnabled)
                 PlayerChecks.Exec();
 

@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>D:\Jeux Steam\steamapps\common\7 Days to Die Dedicated Server\Mods\MSNTools\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -64,8 +64,12 @@
       <HintPath>D:\Jeux Steam\steamapps\common\7 Days to Die Dedicated Server\Mods\Allocs_WebAndMapRendering\MapRendering.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Extensions.DependencyInjection.Abstractions.7.0.0-preview.4.22229.4\lib\net462\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>packages\Newtonsoft.Json.13.0.2-beta1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Noemax.GZip, Version=17.269.5336.0, Culture=neutral, PublicKeyToken=4c0defa954f97f18, processorArchitecture=MSIL">
@@ -84,6 +88,21 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Drawing">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Interactive.Async, Version=6.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>packages\System.Interactive.Async.6.0.1\lib\net48\System.Interactive.Async.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Linq.Async, Version=6.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>packages\System.Linq.Async.6.0.1\lib\net48\System.Linq.Async.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Net.Http">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.7.0.0-preview.2.22152.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Windows.Forms">
@@ -111,6 +130,7 @@
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>D:\Jeux Steam\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -128,6 +148,7 @@
     <Compile Include="src\ChatCommands\IChatCommand.cs" />
     <Compile Include="src\ChatCommands\ChatCommandTrou.cs" />
     <Compile Include="src\ConsoleCommands\Bank.cs" />
+    <Compile Include="src\ConsoleCommands\EditConfig.cs" />
     <Compile Include="src\ConsoleCommands\GetPlayerMoney.cs" />
     <Compile Include="src\ConsoleCommands\ItemException.cs" />
     <Compile Include="src\ConsoleCommands\CheckItemCreativeMode.cs" />
@@ -136,7 +157,6 @@
     <Compile Include="src\ConsoleCommands\MSNConsoleCmdAbstract.cs" />
     <Compile Include="src\ConsoleCommands\MSNHelp.cs" />
     <Compile Include="src\ConsoleCommands\PlaceBlock.cs" />
-    <Compile Include="src\ConsoleCommands\DiscordBot.cs" />
     <Compile Include="src\ConsoleCommands\Donator.cs" />
     <Compile Include="src\ConsoleCommands\ReadResetRegions.cs" />
     <Compile Include="src\ConsoleCommands\ResetRegions.cs" />
@@ -149,14 +169,18 @@
     <Compile Include="src\CustomModEvents\CustomEvents.cs" />
     <Compile Include="src\CustomModEvents\CustomModEvent.cs" />
     <Compile Include="src\CustomModEvents\CustomModEventAbs.cs" />
-    <Compile Include="src\Discord\BloodMoonAlerts.cs" />
+    <Compile Include="src\DiscordWebhook\BloodMoonAlerts.cs" />
+    <Compile Include="src\Functions\KickBloodTower.cs" />
     <Compile Include="src\Handlers\AddResetRegion.cs" />
     <Compile Include="src\Handlers\GetBankDevise.cs" />
+    <Compile Include="src\Handlers\GetPlayerData.cs" />
     <Compile Include="src\Handlers\GetPlayerMoney.cs" />
     <Compile Include="src\Handlers\GetResetRegions.cs" />
     <Compile Include="src\Handlers\GetShopItems.cs" />
     <Compile Include="src\Handlers\PlayerBuyItem.cs" />
     <Compile Include="src\Handlers\RemoveResetRegion.cs" />
+    <Compile Include="src\Handlers\SendPlayerDataDiscord.cs" />
+    <Compile Include="src\Handlers\SendServerMessage.cs" />
     <Compile Include="src\Harmony\H_ApiHandler.cs" />
     <Compile Include="src\Harmony\H_GameManager.cs" />
     <Compile Include="src\Harmony\H_GetLandClaims.cs" />
@@ -164,8 +188,8 @@
     <Compile Include="src\Harmony\H_ChangeBlocks.cs" />
     <Compile Include="src\Harmony\H_EntityAlive.cs" />
     <Compile Include="src\Functions\MSNLocalization.cs" />
+    <Compile Include="src\Harmony\H_ItemIconHandler.cs" />
     <Compile Include="src\Harmony\H_NetPackageDamageEntity.cs" />
-    <Compile Include="src\Harmony\H_RegionFile.cs" />
     <Compile Include="src\Harmony\H_VehicleManager.cs" />
     <Compile Include="src\PersistentData\ItemDataSerializable.cs" />
     <Compile Include="src\Tools\AntiCheat\ChangeBlocks.cs" />
@@ -174,10 +198,10 @@
     <Compile Include="src\Tools\AntiCollapse\AntiCollapse.cs" />
     <Compile Include="src\ConsoleCommands\DespawnEntity.cs" />
     <Compile Include="src\ChatCommands\ChatCommandGetMyDrone.cs" />
-    <Compile Include="src\Discord\DiscordWebhook.cs" />
-    <Compile Include="src\Discord\DiscordWebhookSender.cs" />
-    <Compile Include="src\Discord\Structs.cs" />
-    <Compile Include="src\Discord\Utils.cs" />
+    <Compile Include="src\DiscordWebhook\DiscordWebhook.cs" />
+    <Compile Include="src\DiscordWebhook\DiscordWebhookSender.cs" />
+    <Compile Include="src\DiscordWebhook\Structs.cs" />
+    <Compile Include="src\DiscordWebhook\Utils.cs" />
     <Compile Include="src\Functions\Config.cs" />
     <Compile Include="src\Functions\Timers.cs" />
     <Compile Include="src\Harmony\H_ConsoleCmdBan.cs" />
@@ -187,7 +211,6 @@
     <Compile Include="src\PersistentOperations\PersistentOperations.cs" />
     <Compile Include="src\Tools\Bank\Bank.cs" />
     <Compile Include="src\Tools\ClearVehicles\ClearVehicles.cs" />
-    <Compile Include="src\Tools\DiscordBot\DiscordBot.cs" />
     <Compile Include="src\Tools\PlayerInvulnerabilityAtTrader\PlayerInvulnerabilityAtTrader.cs" />
     <Compile Include="src\Tools\Shop\Shop.cs" />
     <Compile Include="src\Tools\Zones\ResetRegions.cs" />
@@ -202,6 +225,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "C:\Users\mrich\source\repos\msn-tools-final-a20\bin\Debug\MSNTools.dll" "D:\Jeux Steam\steamapps\common\7 Days to Die Dedicated Server\Mods\MSNTools\MSNTools.dll"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

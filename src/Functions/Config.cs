@@ -54,6 +54,7 @@ namespace MSNTools
                     {"Godmode_Detector", new List<string> { "Enable", "Admin_Level" } },
                     {"High_Ping_Kicker", new List<string> { "Enable", "Max_Ping", "Flags" } },
                     {"Inventory_Check", new List<string> { "Enable", "Admin_Level", "Check_Storage", "Exceptions_Items" } },
+                    {"Kick_Blood_Tower", new List<string> { "Enable", "Prefab_Name", "TP_Position" } },
                     {"Player_Infos_Webhook", new List<string> { "Enable", "Webhook_Url", "Connected_Color", "Disconnected_Color" } },
                     {"Player_Invulnerability_At_Trader", new List<string> { "Enable" } },
                     {"Reset_Regions", new List<string> { "Enable", "Day", "Hour", "Buff_Reset_Zones" } },
@@ -376,6 +377,23 @@ namespace MSNTools
                                                     continue;
                                             }
                                             break;
+                                        case "Kick_Blood_Tower":
+                                            if (paramName == "Enable")
+                                            {
+                                                if (!TryParseBool(attribute, out KickBloodTower.IsEnabled, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "Prefab_Name")
+                                            {
+                                                if (!TryParseString(attribute, out KickBloodTower.PrefabName, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            else if (paramName == "TP_Position")
+                                            {
+                                                if (!TryParseVector3i(attribute, out KickBloodTower.TPPosition, nameAttribute, paramName, subChild))
+                                                    continue;
+                                            }
+                                            break;
                                         case "Player_Infos_Webhook":
                                             if (paramName == "Enable")
                                             {
@@ -569,6 +587,7 @@ namespace MSNTools
                 sw.WriteLine($"        <Tool Name=\"Godmode_Detector\" Enable=\"{PlayerChecks.GodEnabled}\" Admin_Level=\"{PlayerChecks.God_Admin_Level}\" />");
                 //sw.WriteLine($"        <Tool Name=\"High_Ping_Kicker\" Enable=\"{0}\" Max_Ping=\"{1}\" Flags=\"{2}\" />");
                 sw.WriteLine($"        <Tool Name=\"Inventory_Check\" Enable=\"{InventoryChecks.IsEnabled}\" Admin_Level=\"{InventoryChecks.Admin_Level}\" Check_Storage=\"{InventoryChecks.Check_Storage}\" Exceptions_Items=\"{InventoryChecks.Exceptions_Items}\" />");
+                sw.WriteLine($"        <Tool Name=\"Kick_Blood_Tower\" Enable=\"{KickBloodTower.IsEnabled}\" Prefab_Name=\"{KickBloodTower.PrefabName}\" TP_Position=\"{KickBloodTower.TPPosition}\"/>");
                 sw.WriteLine($"        <Tool Name=\"Player_Infos_Webhook\" Enable=\"{DiscordWebhookSender.PlayerInfosEnabled}\" Webhook_Url=\"{DiscordWebhookSender.PlayerInfosWebHookUrl}\" Connected_Color=\"{DiscordWebhookSender.PlayerConnectedColor.r},{DiscordWebhookSender.PlayerConnectedColor.g},{DiscordWebhookSender.PlayerConnectedColor.b}\" Disconnected_Color=\"{DiscordWebhookSender.PlayerDisconnectedColor.r},{DiscordWebhookSender.PlayerDisconnectedColor.g},{DiscordWebhookSender.PlayerDisconnectedColor.b}\" />");
                 sw.WriteLine($"        <Tool Name=\"Player_Invulnerability_At_Trader\" Enable=\"{PlayerInvulnerabilityAtTrader.IsEnabled}\" />");
                 sw.WriteLine($"        <Tool Name=\"Reset_Regions\" Enable=\"{ResetRegions.IsEnabled}\" Day=\"{ResetRegions.Day}\" Hour=\"{ResetRegions.Hour}\" Buff_Reset_Zones=\"{Zones.BuffResetZone}\" />");
@@ -698,6 +717,32 @@ namespace MSNTools
             if (!parse)
                 MSNUtils.LogWarning($"Ignoring {nameAttribute} entry in {ConfigFile} because of invalid (True/False) value for '{paramName}' attribute: {node.OuterXml}");
             return parse;
+        }
+
+        /// <summary>
+        /// Parse un Vector3i.
+        /// </summary>
+        /// <param name="value">Valeur récupérée</param>
+        /// <param name="result">Valeur retournée</param>
+        /// <param name="nameAttribute">Nom de l'attribut</param>
+        /// <param name="paramName">Nom du paramètre</param>
+        /// <param name="node">Noeud XML</param>
+        /// <returns><see cref="bool"/></returns>
+        static bool TryParseVector3i(string value, out Vector3i result, string nameAttribute, string paramName, XmlNode node)
+        {
+            if (value.Length != 0)
+            {
+                string[] array = value.Split(new string[] { ",", " ,", ", ", " , " }, StringSplitOptions.RemoveEmptyEntries);
+                Vector3i pos = new Vector3i(int.Parse(array[0]), int.Parse(array[1]), int.Parse(array[2]));
+                result = pos;
+                return true;
+            }
+            else
+            {
+                result = Vector3i.zero;
+                MSNUtils.LogWarning($"Ignoring {nameAttribute} entry in {ConfigFile} because of invalid Vector3i value for '{paramName}' attribute: {node.OuterXml}");
+                return false;
+            }
         }
 
         /// <summary>

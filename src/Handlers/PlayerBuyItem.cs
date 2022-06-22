@@ -46,8 +46,6 @@ namespace MSNTools
                 if (clientInfo == null) return;
                 
                 shopItem.Purchase(clientInfo);
-                //WebCommandResult _sender = new WebCommandResult("pbi", str, WebCommandResult.ResultType.Raw, _resp);
-                //SingletonMonoBehaviour<SdtdConsole>.Instance.ExecuteAsync("pbi " + str, _sender);
             }
         }
 
